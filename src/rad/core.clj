@@ -1,5 +1,6 @@
 (ns rad.core
   (:gen-class))
+(require '[rad.terminal])
 
 (def sample-buffer
   [ ;; a vector of lines

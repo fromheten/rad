@@ -1,0 +1,9 @@
+* rad.buffer namespace
+** TODO current-buffer - create the atom
+An atom that has the current buffer in it. When this is updated, also redraw the screen.
+** TODO Move functions from rad.core to rad.buffer
+
+* rad.terminal
+Responsible for doing i/o to and from a terminal.
+** TODO Make it listen to rad.buffer/current-buffer, and upon update display that buffer
+**
