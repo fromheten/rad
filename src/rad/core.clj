@@ -1,6 +1,6 @@
 (ns rad.core
   (:gen-class))
-(require '[rad.terminal])
+(require '[rad.terminal :as terminal])
 
 (def sample-buffer
   [ ;; a vector of lines
@@ -34,5 +34,11 @@
    :post [string?]}
   (clojure.string/join "\n" (map line->string buffer)))
 
+(defn handle-keypress
+  "Takes a key press, and delegates it into the proper action"
+  [key]
+  (println key))
+
 (defn -main []
-  (println (buffer->string sample-buffer)))
+  (println "Welcome to rad")
+  (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress))
