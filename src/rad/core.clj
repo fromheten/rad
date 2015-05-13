@@ -34,11 +34,13 @@
    :post [string?]}
   (clojure.string/join "\n" (map line->string buffer)))
 
-(defn handle-keypress
+(defn handle-keypress!
   "Takes a key press, and delegates it into the proper action"
   [key]
-  (println key))
+  (do (println (str "keypress: " key))
+      (terminal/render-buffer! sample-buffer terminal/scr)))
 
 (defn -main []
   (println "Welcome to rad")
-  (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress))
+  (do (terminal/init-terminal! terminal/scr)
+      (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress!)))
