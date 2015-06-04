@@ -24,9 +24,7 @@
 
 (defn -main []
   (do (println "Welcome to rad")
-      (rad.swt/say-hi)
       (rad.swt/begin))
-
   ;;  (do (terminal/init-terminal! terminal/scr)
   ;;      (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress!))
   )

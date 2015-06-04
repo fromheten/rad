@@ -1,9 +1,10 @@
 ;; Swt front end
 ;; This namespace describes functions for displaying rad buffers in SWT
 (ns rad.swt
-  (:import (org.eclipse.swt.widgets Display Shell)
-           (org.eclipse.swt.layout GridLayout)
-           (org.eclipse.swt.events ShellAdapter)))
+  (:import [org.eclipse.swt SWT]
+           [org.eclipse.swt.widgets Display Shell Text]
+           [org.eclipse.swt.layout GridLayout]
+           [org.eclipse.swt.events ShellAdapter]))
 
 (defn create-shell [display shell]
   (let [layout (GridLayout.)]
@@ -26,8 +27,13 @@
 
 (defn begin []
   (let [display (Display.)
-        shell (Shell. display)]
+        shell (Shell. display)
+        text-area (Text. shell 2) ;; 2 Means multi li
+        ]
     (create-shell display shell)
+    ;;(.setBounds text-area 10 10 200 200)
     (.setSize shell 700 700)
+    (.setBounds text-area (.getClientArea shell))
+    (.setText text-area "Hello Jesper! \nThank you for helping me with Java :D")
     (.open shell)
     (swt-loop display shell)))
