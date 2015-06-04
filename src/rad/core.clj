@@ -1,7 +1,7 @@
 (ns rad.core
   (:gen-class)
   (:require [rad.terminal :as terminal]
-            [rad.swt-frontend :as swt-f]
+            [rad.swt]
             [rad.buffer :as buffer]))
 
 (defn leader-key?
@@ -23,7 +23,10 @@
             (terminal/render-buffer! buffer/sample-buffer terminal/scr)))
 
 (defn -main []
-  (println "Welcome to rad")
-;;  (do (terminal/init-terminal! terminal/scr)
+  (do (println "Welcome to rad")
+      (rad.swt/say-hi)
+      (rad.swt/begin))
+
+  ;;  (do (terminal/init-terminal! terminal/scr)
   ;;      (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress!))
   )
