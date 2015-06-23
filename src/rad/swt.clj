@@ -2,7 +2,7 @@
 ;; This namespace describes functions for displaying rad buffers in SWT
 (ns rad.swt
   (:import [org.eclipse.swt SWT]
-           [org.eclipse.swt.widgets Display Shell Text]
+           [org.eclipse.swt.widgets Display Shell Text Listener]
            [org.eclipse.swt.layout GridLayout]
            [org.eclipse.swt.events ShellAdapter]))
 
@@ -35,5 +35,12 @@
     (.setSize shell 700 700)
     (.setBounds text-area (.getClientArea shell))
     (.setText text-area "Hello Jesper! \nThank you for helping me with Java :D")
+
+    ;; listen to input
+    (.addListener text-area (. SWT KeyDown)
+                  (proxy [Listener] []   ;; extend Java class Listener
+                    (handleEvent [event] ;; with method 'handleEvent'
+                      (println "HELLO!!!!"))))
+
     (.open shell)
     (swt-loop display shell)))
