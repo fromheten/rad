@@ -31,8 +31,9 @@
   (swap! current-buffer
          (fn [_] (insert-char-in-buffer @current-buffer point (make-character alphanumeric)))))
 
-(defn buffer? [buffer]
+(defn buffer?
   "Returns true if buffer is a proper buffer, else false"
+  [buffer]
   ;; TODO FIXME
   (vector? buffer))
 
@@ -42,8 +43,9 @@
                 (name (:character character)))
               line)))
 
-(defn buffer->string [buffer]
+(defn buffer->string
   "Makes a string of all lines in a buffer, separated by newlines"
+  [buffer]
   {:pre  [buffer?]
    :post [string?]}
   (do

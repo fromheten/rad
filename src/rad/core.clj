@@ -14,6 +14,7 @@
   [point steps] (assoc point (first point) (+ (first point) steps)))
 
 (defn sync-frontend-cursor-to-point-atom!
+  "Updates the cursor in whatever front end is active"
   []
   (terminal/move-cursor-in-terminal! @point))
 
@@ -21,8 +22,7 @@
   "Moves point 'steps' steps, and also updates the UI cursor"
   [steps] (do
             (reset! point (move-point-forward @point 1))
-            (sync-frontend-cursor-to-point-atom!)
-            ))
+            (sync-frontend-cursor-to-point-atom!)))
 
 (defn handle-keypress!
   "Takes a key press, and delegates it into the proper action"

@@ -41,22 +41,24 @@
       (swt-loop display shell))))
 
 ;; Credit for this code got to Kevin Albrecht. Thank you! (or tack så mycket!)
-(defn start-gui-threaded []
+(defn start-gui-threaded
   "Launch the GUI in a new thread"
+  []
   (let [thread (Thread. begin)]
     (.start thread)
     thread))
 
-;; This macro executes its body in the thread above. It simplifies REPL debugging.
-(defmacro exec [& body]
-  "Run `body` inside the thread of display-ref"
+(defmacro exec
+  "Run `body` inside the thread of display-ref. Simplifies REPL debugging"
+  [& body]
   `(.syncExec (deref display-ref)
               (reify Runnable
                 (run [this]
                   ~@body))))
 
-(defmacro pexec [& body]
+(defmacro pexec
   "Print the result of `body` inside the thread of display-ref"
+  [& body]
   `(.syncExec (deref display-ref)
               (reify Runnable
                 (run [this]
