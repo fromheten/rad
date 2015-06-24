@@ -18,14 +18,18 @@
   (s/put-string scr 10 10 "hello")
   (s/redraw scr))
 
+(defn move-cursor-in-terminal!
+  [point] (s/move-cursor scr (first point) (second point)))
+
 (defn render-buffer!
   "Renders a buffer to the terminal. This happens a lot."
   [buffer scr]
-  (let [string (buffer/buffer->string buffer)]
-    (do (s/put-string scr 1 0 string)
-        (s/redraw scr))))
+  (do
+    (s/clear scr)
+    (s/put-string scr 1 0 (buffer/buffer->string buffer))
+    (s/redraw scr)))
 
-(render-buffer! buffer/sample-buffer scr)
+(render-buffer! @buffer/current-buffer scr)
 
 (defn get-keypress-keepalive-loop
   "Keeps the terminal alive by blockingly waiting for a keypress, and then delegating it"

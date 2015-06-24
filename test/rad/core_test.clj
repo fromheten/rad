@@ -2,13 +2,8 @@
   (:require [clojure.test :refer :all]
             [rad.core :refer :all]))
 
-(deftest print-buffer
-  (testing "printing a line"
+(deftest point-tests
+  (testing "Moving the point 5 steps"
     (is (=
-         "cd"
-         (line->string (second sample-buffer)))))
-
-  (testing "printing a whole buffer"
-    (is (=
-         "ab\ncd"
-         (buffer->string sample-buffer)))))
+         [5 0]
+         (move-point-forward [0 0] 5)))))
