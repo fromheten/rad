@@ -1,35 +1,40 @@
 (ns rad.buffer
   "Functions for dealing with rad buffers.")
 
-(def sample-buffer
-  [ ;; a vector of lines
-   [ ;; a line
-    {:character :a
-     :color :red}
-    {:character :b
-     :color :blue}]
-   [ ;; another line
-    {:character :c
-     :font :serif}
-    {:character :d
-     :font :serif
-     :color :green}]
-   ])
+(def current-buffer (atom [[{:character :r} {:character :a}]
+                          [{:character :d} {:character :!}]
+                          ]))
 
 (defn make-character
   "Takes an alphanumeric and return a character object"
   [alphanumeric]
-  {:character alphanumeric})
+  {:character (keyword (str alphanumeric))})
 
-(defn insert-char
+(defn insert-char-in-line
+  "Returns a new line with column 'point' replaces with new alphanumeric"
+  [line column alphanumeric]
+  (assoc line column alphanumeric))
+
+;; fixme rename to in
+(defn insert-char-in-buffer
+  "Returns buffer with char inserted at point"
+  [buffer point alphanumeric]
+  (assoc buffer (second point) (insert-char-in-line
+                                (buffer (first point)) ;x
+                                (second point)         ;y
+
+                                alphanumeric)))
+
+(defn insert-char!
   "Inserts a character into the current buffer at point"
   [point alphanumeric]
-  (println (str "inserting: " (make-character alphanumeric))))
+  (swap! current-buffer
+         (fn [_] (insert-char-in-buffer @current-buffer point (make-character alphanumeric)))))
 
 (defn buffer? [buffer]
   "Returns true if buffer is a proper buffer, else false"
   ;; TODO FIXME
-  true)
+  (vector? buffer))
 
 (defn line->string [line]
   (apply str                  ;; '(a b) -> "ab"
@@ -41,4 +46,6 @@
   "Makes a string of all lines in a buffer, separated by newlines"
   {:pre  [buffer?]
    :post [string?]}
-  (clojure.string/join "\n" (map line->string buffer)))
+  (do
+    (println buffer)
+    (clojure.string/join "\n" (map line->string buffer))))
