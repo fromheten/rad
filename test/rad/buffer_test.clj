@@ -2,28 +2,28 @@
   (:require [clojure.test :refer :all]
             [rad.buffer :refer :all]))
 
-(def example-buffer (atom [[{:character :r} {:character :a}]
-                           [{:character :d} {:character :!}]]))
+(def example-buffer (atom [[\r \a]
+                           [\d \!]]))
 
 (deftest inserting-into-buffers-tests
   (testing "inserting a character at 2nd position in a line"
     (is (=
          (insert-char-in-line
-          [{:character :r} {:character :x}]
+          [\r \x]
           ([0 1] 1)
-          {:character :a})
+          \a)
 
-         [{:character :r} {:character :a}])))
+         [\r \a])))
 
   (testing "inserting a character at 1x1 in the a buffer"
     (is (=
          (insert-char-in-buffer
           @example-buffer
           [1 1]
-          {:character :?})
+          \?)
 
-         [[{:character :r} {:character :a}]
-          [{:character :d} {:character :?}]]))))
+         [[\r \a]
+          [\d \?]]))))
 
 (deftest print-buffer-tests
   (testing "printing a line"
