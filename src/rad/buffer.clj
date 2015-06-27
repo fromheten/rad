@@ -1,14 +1,14 @@
 (ns rad.buffer
   "Functions for dealing with rad buffers.")
 
-(def current-buffer (atom [[{:character :r} {:character :a}]
-                          [{:character :d} {:character :!}]
-                          ]))
+(def current-buffer (atom [[\r \a]
+                           [\d \!]]))
+
 
 (defn make-character
   "Takes an alphanumeric and return a character object"
   [alphanumeric]
-  {:character (keyword (str alphanumeric))})
+  alphanumeric)
 
 (defn insert-char-in-line
   "Returns a new line with column 'point' replaces with new alphanumeric"
@@ -40,7 +40,7 @@
 (defn line->string [line]
   (apply str                  ;; '(a b) -> "ab"
          (map (fn [character] ;; Returns '(a b)
-                (name (:character character)))
+                character)
               line)))
 
 (defn buffer->string
