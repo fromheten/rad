@@ -15,6 +15,16 @@
 
          [\r \a])))
 
+  (testing "inserting Japanese character at [_ 1]"
+    (is (=
+         (insert-char-in-line
+          [\r \a]
+          ([0 1] 1)
+          \行
+          )
+         [\r \行]
+         )))
+
   (testing "inserting a character at 1x1 in the a buffer"
     (is (=
          (insert-char-in-buffer
