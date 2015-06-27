@@ -13,21 +13,18 @@ If you know what a rad buffer is, you know everything there is to know about `ra
 A buffer can look like this:
 
 ```
-[                    ;; Buffers are vectors of lines
- [                   ;; a line
-  {:char :r          ;; will show up like an 'a' colored red
-   :color :red}
-  {:char :a
-   :color :blue}]    ;; end of line
- [                   ;; another line
-  {:char :d
-   :font :serif}     ;; A 'c' in serif font. Or whatever
-  {:char :!
-   :font :serif
-   :color :green}]   ;; A green 'd' in serif font
- ])
+[       ;; A buffer is a list of line
+  [     ;; A line is a list of chars
+    \r  ;; A char
+    \a
+  ]
+  [
+    \d
+    \!
+  ]
+])
 ```
-When rendering this and stripping font and color data, it will look like this
+When rendering this, it will look like this
 ```
 ra
 d!
