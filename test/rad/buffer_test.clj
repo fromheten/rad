@@ -4,6 +4,13 @@
 
 (def example-buffer (atom [[\r \a]
                            [\d \!]]))
+(def long-example-buffer (atom [[\r \a \d]
+                                [\i \s]
+                                [\m \e \a \n \t]
+                                [\t \o]
+                                [\b \e]
+                                [\h \a \c \k \e \d]
+                                ]))
 
 (deftest inserting-into-buffers-tests
   (testing "inserting a character at 2nd position in a line"
@@ -40,7 +47,27 @@
 
          [[\r \a]
           [\d \! \?]]
-         ))))
+         )))
+  (testing "inserting newlines"
+    (is (=
+         (insert-char-in-buffer @example-buffer [1 0] \newline)
+
+         [[\r]
+          [\a]
+          [\d \!]]
+         ))
+    (is (=
+         (insert-char-in-buffer @example-buffer [1 1] \newline)
+
+         [[\r \a] [\d] [\!]]
+         ))
+    (is (=
+         (insert-char-in-buffer @example-buffer [0 0] \newline)
+
+         [[] [\r \a] [\d \!]]))
+    (is (=
+         (insert-char-in-buffer @example-buffer [2 1] \newline)
+         [[\r \a] [\d \!] []]))))
 
 (deftest print-buffer-tests
   (testing "printing a line"

@@ -16,13 +16,47 @@
   (assoc line column alphanumeric))
 
 (defn insert-char-in-buffer
-  "Returns buffer with char inserted at point"
+  "Inserts char at point in buffer.
+  If char is a \newline, it will insert a new line in the buffer after point"
   [buffer point alphanumeric]
-  (assoc buffer (second point) (insert-char-in-line
-                                (buffer (second point)) ;y - line
-                                (first point)           ;x - column
+  (condp = alphanumeric
 
-                                alphanumeric)))
+    ;; In case of \newline, a buffer like this:
+    ;; r|a ; (| means point, or [1 0])
+    ;; d!
+    ;;
+    ;; turnes into:
+    ;; r
+    ;; a
+    ;; d!
+    
+    \newline (let [point-x (first point)
+                   point-y (second point)
+                   current-line (buffer point-y)
+
+                   every-line-above-current-line (subvec buffer 0 point-y)     ;; collection of lines
+                   current-line-until-point (subvec current-line 0 point-x)    ;; one line
+                   rest-of-current-line (subvec current-line point-x)          ;; one line
+                   every-line-below-current-line (subvec buffer (+ 1 point-y)) ;; collection of lines
+
+                   ;; let's do it all in the let
+                   every-line-above-plus-current-until-point (conj every-line-above-current-line current-line-until-point)
+                   above-current-plus-rest-of-current (conj every-line-above-plus-current-until-point rest-of-current-line)
+
+                   ;; Here is the last bug. I'm adding a collection into another collection.
+                   ;; What I want to do is to add every item of every-line-below-current-line into above-current-plus-rest-of-current
+                   the-whole-pancake (into above-current-plus-rest-of-current every-line-below-current-line)
+                   ]
+
+               the-whole-pancake)
+
+    
+    ;; else
+    (assoc buffer (second point) (insert-char-in-line
+                                  (buffer (second point)) ;y - line
+                                  (first point)           ;x - column
+
+                                  alphanumeric))))
 
 (defn insert-char!
   "Inserts a character into the current buffer at point"
