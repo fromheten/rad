@@ -15,13 +15,12 @@
   [line column alphanumeric]
   (assoc line column alphanumeric))
 
-;; fixme rename to in
 (defn insert-char-in-buffer
   "Returns buffer with char inserted at point"
   [buffer point alphanumeric]
   (assoc buffer (second point) (insert-char-in-line
-                                (buffer (first point)) ;x
-                                (second point)         ;y
+                                (buffer (second point)) ;y - line
+                                (first point)           ;x - column
 
                                 alphanumeric)))
 
