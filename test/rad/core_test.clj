@@ -2,8 +2,37 @@
   (:require [clojure.test :refer :all]
             [rad.core :refer :all]))
 
-(deftest point-tests
-  (testing "Moving the point 5 steps"
+(def test-buffer (atom [[\r \a \d]
+                        [\i \s]
+                        [\m \e \a \n \t]
+                        [\t \o]
+                        [\b \e]
+                        [\h \a \c \k \e \d]
+                        ]))
+
+(deftest insertion-tests
+  (testing "Determining whether input is meant to go into buffer, or key-commands"
     (is (=
-         [5 0]
-         (move-point-forward [0 0] 5)))))
+         true
+         (alphanumeric? \a))
+
+        (=
+         false
+         (alphanumeric? :down))
+        (=
+         false
+         (alphanumeric? "h")))))
+
+(deftest point-tests
+  (testing "Moving the point"
+    (is (=
+         [3 0]
+         (move-point-forward @test-buffer [2 0] 1)))
+    (is (=
+         [3 0]
+         (move-point-forward @test-buffer [3 0] 1))))
+
+  (testing "Moving point to the edges"
+    (is (=
+         [2 4]
+         (move-point-forward @test-buffer [2 4] 5)))))
