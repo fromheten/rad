@@ -4,6 +4,13 @@
 
 (def example-buffer (atom [[\r \a]
                            [\d \!]]))
+(def long-example-buffer (atom [[\r \a \d]
+                                [\i \s]
+                                [\m \e \a \n \t]
+                                [\t \o]
+                                [\b \e]
+                                [\h \a \c \k \e \d]
+                                ]))
 
 (deftest inserting-into-buffers-tests
   (testing "inserting a character at 2nd position in a line"
@@ -15,15 +22,14 @@
 
          [\r \a])))
 
-  (testing "inserting Japanese character at [_ 1]"
+  (testing "inserting Henji character at [_ 1]"
     (is (=
          (insert-char-in-line
           [\r \a]
           ([0 1] 1)
           \行
           )
-         [\r \行]
-         )))
+         [\r \行])))
 
   (testing "inserting a character at 1x1 in the a buffer"
     (is (=
@@ -33,7 +39,35 @@
           \?)
 
          [[\r \a]
-          [\d \?]]))))
+          [\d \?]])))
+
+  (testing "inserting a character at the end of a line in a buffer"
+    (is (=
+         (insert-char-in-buffer @example-buffer [2 1] \?)
+
+         [[\r \a]
+          [\d \! \?]]
+         )))
+  (testing "inserting newlines"
+    (is (=
+         (insert-char-in-buffer @example-buffer [1 0] \newline)
+
+         [[\r]
+          [\a]
+          [\d \!]]
+         ))
+    (is (=
+         (insert-char-in-buffer @example-buffer [1 1] \newline)
+
+         [[\r \a] [\d] [\!]]
+         ))
+    (is (=
+         (insert-char-in-buffer @example-buffer [0 0] \newline)
+
+         [[] [\r \a] [\d \!]]))
+    (is (=
+         (insert-char-in-buffer @example-buffer [2 1] \newline)
+         [[\r \a] [\d \!] []]))))
 
 (deftest print-buffer-tests
   (testing "printing a line"

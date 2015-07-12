@@ -25,11 +25,17 @@
             (sync-frontend-cursor-to-point-atom!)))
 
 (defn handle-keypress!
-  "Takes a key press, and delegates it into the proper action"
+  "Takes a key press, and delegates it into the proper action
+
+  Todos: 
+  * Make it front-end agnostic - now it depends on many things from the terminal front end"
   [key] (do (println (str "keypress: " key))
-            (buffer/insert-char! @point key)
+            (if (= :enter key) ;; replace with fn frontend/normalize-key
+              (buffer/insert-char! @point \newline)
+              
+              (buffer/insert-char! @point key))
             (move-point-forward! 1)
-            (terminal/render-buffer! (deref buffer/current-buffer) terminal/scr)))
+            (terminal/render-buffer! @buffer/current-buffer terminal/scr)))
 
 (defn -main []
   (do
