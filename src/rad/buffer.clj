@@ -29,7 +29,6 @@
     ;; r
     ;; a
     ;; d!
-    
     \newline (let [point-x (first point)
                    point-y (second point)
                    current-line (buffer point-y)
@@ -39,18 +38,14 @@
                    rest-of-current-line (subvec current-line point-x)          ;; one line
                    every-line-below-current-line (subvec buffer (+ 1 point-y)) ;; collection of lines
 
-                   ;; let's do it all in the let
                    every-line-above-plus-current-until-point (conj every-line-above-current-line current-line-until-point)
                    above-current-plus-rest-of-current (conj every-line-above-plus-current-until-point rest-of-current-line)
 
                    ;; Here is the last bug. I'm adding a collection into another collection.
                    ;; What I want to do is to add every item of every-line-below-current-line into above-current-plus-rest-of-current
-                   the-whole-pancake (into above-current-plus-rest-of-current every-line-below-current-line)
-                   ]
+                   the-whole-new-line (into above-current-plus-rest-of-current every-line-below-current-line)]
+               the-whole-new-line)
 
-               the-whole-pancake)
-
-    
     ;; else
     (assoc buffer (second point) (insert-char-in-line
                                   (buffer (second point)) ;y - line
@@ -81,6 +76,9 @@
   [buffer]
   {:pre  [buffer?]
    :post [string?]}
-  (do
-    (println buffer)
-    (clojure.string/join "\n" (map line->string buffer))))
+  (clojure.string/join "\n" (map line->string buffer)))
+
+(defn buffer->list-of-strings
+  "Takes a buffer, and returns a list of every line, represented as a string"
+  [buffer]
+  (into [] (map line->string buffer)))

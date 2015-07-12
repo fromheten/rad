@@ -78,4 +78,10 @@
   (testing "printing a whole buffer"
     (is (=
          "ra\nd!"
-         (buffer->string @example-buffer)))))
+         (buffer->string @example-buffer))))
+
+  (testing "printing a buffer like this [\"first line\" \"second line\"]"
+    ;; maybe this should be the default behaviour?
+    (is (=
+         ["ra" "d!"]
+         (buffer->list-of-strings @example-buffer)))))

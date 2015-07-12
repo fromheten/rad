@@ -22,11 +22,24 @@
   [point] (s/move-cursor scr (first point) (second point)))
 
 (defn render-buffer!
-  "Renders a buffer to the terminal. This happens a lot."
+  "Renders a buffer to the terminal. This happens a lot. Fixme remomve dependency on rad.buffer"
   [buffer scr]
   (do
     (s/clear scr)
-    (s/put-string scr 1 0 (buffer/buffer->string buffer))
+    (println buffer)
+
+    (let [buffer-as-lines-of-strings (rad.buffer/buffer->list-of-strings buffer)]
+      (loop [amount-of-lines-left-to-print (dec (count buffer-as-lines-of-strings))
+             index 0]
+
+        (s/put-string scr 0 index
+                      (buffer-as-lines-of-strings index))
+
+        (if (> amount-of-lines-left-to-print 0)
+          (recur (dec amount-of-lines-left-to-print)
+                 (inc index))
+          "done")))
+
     (s/redraw scr)))
 
 (render-buffer! @buffer/current-buffer scr)
