@@ -75,7 +75,8 @@
             :enter (do
                      (buffer/insert-char! @point \newline)
                      ;; move point to one line down x=0, y=y+1
-                     (reset! point [0 (+ 1 (second @point))]))
+                     (reset! point [0 (+ 1 (second @point))])
+                     (sync-frontend-cursor-to-point-atom!))
             :backspace (do
                          (buffer/delete-char-backwards! @point)
                          (move-point-backwards! 1))

@@ -1,8 +1,6 @@
 (ns rad.buffer
   "Functions for dealing with rad buffers.")
 
-(declare buffer->list-of-strings)
-
 (def current-buffer (atom [[\r \a]
                            [\d \!]]))
 
