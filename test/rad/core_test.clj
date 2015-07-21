@@ -7,19 +7,18 @@
                         [\m \e \a \n \t]
                         [\t \o]
                         [\b \e]
-                        [\h \a \c \k \e \d]
-                        ]))
+                        [\h \a \c \k \e \d]]))
 
 (deftest insertion-tests
   (testing "Determining whether input is meant to go into buffer, or key-commands"
     (is (=
          true
-         (alphanumeric? \a))
+         (alphanumeric? \a)))
 
-        (=
+    (is (=
          false
-         (alphanumeric? :down))
-        (=
+         (alphanumeric? :down)))
+    (is (=
          false
          (alphanumeric? "h")))))
 
@@ -35,4 +34,8 @@
   (testing "Moving point to the edges"
     (is (=
          [2 4]
-         (move-point-forward @test-buffer [2 4] 5)))))
+         (move-point-forward @test-buffer [2 4] 5))))
+
+  (testing "Moving point backwards"
+    (= [1 0]
+       (move-point-backwards @test-buffer [3 0] 2))))

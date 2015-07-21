@@ -1,13 +1,10 @@
-* rad.buffer
-** DONE current-buffer - create the atom
-   CLOSED: [2015-06-26 Fri 17:33]
-   An atom that has the current buffer in it. When this is updated, also redraw the screen.
-** DONE Move functions from rad.core to rad.buffer
-   CLOSED: [2015-06-26 Fri 17:33]
-** TODO Make a character be just a simple `char`, rather than a hash-map with metadata. YAGNI...
-* rad.terminal
-Responsible for doing i/o to and from a terminal.
-** DONE Make it listen to rad.buffer/current-buffer, and upon update display that buffer
-   CLOSED: [2015-06-26 Fri 17:33]
-* rad.swt
-** TODO Redo and put all Java objects in (ref)s
+* Roadmap / todo-list
+** TODO *earmuff* important vars such as buffer/current-buffer, point, etc
+** TODO Move point-handling functions into their own ns, instead of rad.core
+** TODO Make plugin system (basically (load-file) every file in ~/.rad/plugins
+** DONE handle-keypress! understand backspace (delete backwards -> move cursor 1 step back
+   CLOSED: [2015-07-21 Tue 21:14]
+*** TODO Make rad.core/move-point-backwards (the pure one)
+** DONE move-point-forward should take an arbitrary number of steps (not does 1)
+   CLOSED: [2015-07-21 Tue 21:15]
+** TODO Update Readme

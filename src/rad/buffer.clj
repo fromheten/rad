@@ -4,11 +4,48 @@
 (def current-buffer (atom [[\r \a]
                            [\d \!]]))
 
-
 (defn make-character
   "Takes an alphanumeric and return a character object"
   [alphanumeric]
   alphanumeric)
+
+(defn delete-char-in-line
+  "Returns a line with whatever is at position point-x removed"
+  [line point-x]
+  (let [each-char-except-for-point (subvec line 0 point-x)
+        second-half-of-line (subvec line (+ 1 point-x))]
+
+    ;; put htese those in one vector
+    (into each-char-except-for-point second-half-of-line)))
+
+(defn delete-char-in-buffer
+  "Deletes the character at `point' in `buffer'"
+  [buffer point]
+  (let [point-x (first point)
+        point-y (second point)
+
+        all-lines-above-current (subvec buffer 0 point-y)
+        current-line (buffer point-y)
+        current-line-without-deleted-char (delete-char-in-line current-line point-x)
+        all-lines-below-current (subvec buffer (inc point-y) (count buffer))]
+
+    ;; Join lines above current, with the current (modified) line, with all lines below
+    (into
+     (into all-lines-above-current
+           (vector current-line-without-deleted-char))
+     all-lines-below-current)))
+
+(defn delete-char-backwards
+  "Deletes a char in a buffer one column before point-x"
+  [buffer point]
+  (if (not (= (first point) 0))
+    (delete-char-in-buffer buffer [(dec (first point)) (second point)])
+    buffer))
+
+(defn delete-char-backwards!
+  "Deletes a char backwards from @point, and saves it to @current-buffer"
+  [point]
+  (reset! current-buffer (delete-char-backwards @current-buffer point)))
 
 (defn insert-char-in-line
   "Returns a new line with column 'point' replaces with new alphanumeric"
@@ -21,14 +58,6 @@
   [buffer point alphanumeric]
   (condp = alphanumeric
 
-    ;; In case of \newline, a buffer like this:
-    ;; r|a ; (| means point, or [1 0])
-    ;; d!
-    ;;
-    ;; turnes into:
-    ;; r
-    ;; a
-    ;; d!
     \newline (let [point-x (first point)
                    point-y (second point)
                    current-line (buffer point-y)
@@ -45,6 +74,8 @@
                    ;; What I want to do is to add every item of every-line-below-current-line into above-current-plus-rest-of-current
                    the-whole-new-line (into above-current-plus-rest-of-current every-line-below-current-line)]
                the-whole-new-line)
+
+    \backspace (delete-char-backwards @current-buffer point)
 
     ;; else
     (assoc buffer (second point) (insert-char-in-line
