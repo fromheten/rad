@@ -1,8 +1,8 @@
-(defproject rad "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+(defproject rad "0.0.2"
+  :description "A radically simple hackers enviroment"
+  :url "https://github.com/fromheten/rad"
+  :license {:name "GNU GPL"
+            :url "https://gnu.org/licenses/gpl.html"}
   :plugins [[jonase/eastwood "0.2.1"]]
   :dependencies [[org.clojure/clojure "1.7.0"]
                  [clojure-lanterna "0.9.4"]
