@@ -32,16 +32,18 @@
 (defn move-point-forward
   "Returns point 'steps' steps forward until it hits a newline."
   [buffer point steps]
-  (let [line (buffer (second point))
-        point-x (first point)
+  (let [point-x (first point)
         point-y (second point)
+        line (buffer point-y)
         can-move-forward? (fn [line p-x]
                             (not (>= p-x (count line))))]
 
-    (if (and (> steps 0) (can-move-forward? line point-x))
+    (if (and
+         (> steps 0)
+         (can-move-forward? line point-x))
       (recur
        buffer
-       [(+ 1 point-x) point-y] ;; one step forward
+       [(inc point-x) point-y] ;; one step forward
        (- steps 1))
       point)))
 
@@ -69,7 +71,6 @@
   Todos:
   * Make it front-end agnostic - now it depends on many things from the terminal front end"
   [key] (do
-          (println (str "keypress: " key ", point: " @point))
           (condp = key
             :enter (do
                      (buffer/insert-char! @point \newline)
@@ -83,6 +84,7 @@
             (do  (buffer/insert-char! @point key)
                  (move-point-forward! 1)))
 
+          (println (str "keypress: " key ", point: " @point))
           (terminal/render-buffer! @buffer/current-buffer terminal/scr)))
 
 (defn -main []

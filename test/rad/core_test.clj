@@ -15,9 +15,9 @@
          true
          (alphanumeric? \a)))
 
-    (is    (=
-            false
-            (alphanumeric? :down)))
+    (is (=
+         false
+         (alphanumeric? :down)))
     (is (=
          false
          (alphanumeric? "h")))))
@@ -38,5 +38,4 @@
 
   (testing "Moving point backwards"
     (= [1 0]
-       (move-point-backwards @test-buffer [3 0] 2)
-     )))
+       (move-point-backwards @test-buffer [3 0] 2))))
