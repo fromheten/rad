@@ -1,14 +1,51 @@
 (ns rad.buffer
   "Functions for dealing with rad buffers.")
 
+(declare buffer->list-of-strings)
+
 (def current-buffer (atom [[\r \a]
                            [\d \!]]))
-
 
 (defn make-character
   "Takes an alphanumeric and return a character object"
   [alphanumeric]
   alphanumeric)
+
+(defn delete-char-in-line
+  "Returns a line with whatever is at position point-x removed"
+  [line point-x]
+  (let [line-form-start-until-point-x (subvec line 0 point-x)
+        second-half-of-line (subvec line (+ 1 point-x))]
+
+    ;; put htese those in one vector
+    (into line-form-start-until-point-x second-half-of-line)))
+
+(defn delete-char-in-buffer
+  "Deletes the character at `point' in `buffer'"
+  [buffer point]
+  (let [point-x (first point)
+        point-y (second point)
+
+        all-lines-above-current (subvec buffer 0 point-y)
+        current-line (buffer point-y)
+        current-line-without-deleted-char (delete-char-in-line current-line point-x)
+        all-lines-below-current (subvec buffer (inc point-y) (count buffer))
+        ]
+
+    (into (into all-lines-above-current
+                (vector current-line-without-deleted-char))
+          all-lines-below-current)))
+
+(defn delete-char-backwards
+  "Deletes a char in a buffer one column before point-x"
+  [buffer point]
+  (delete-char-in-buffer buffer [(dec (first point)) (second point)]))
+
+(defn delete-char-backwards!
+  "Deletes a char backwards from @point, and saves it to @current-buffer"
+  [point]
+  (reset! current-buffer (delete-char-backwards @current-buffer point)))
+
 
 (defn insert-char-in-line
   "Returns a new line with column 'point' replaces with new alphanumeric"
@@ -21,14 +58,6 @@
   [buffer point alphanumeric]
   (condp = alphanumeric
 
-    ;; In case of \newline, a buffer like this:
-    ;; r|a ; (| means point, or [1 0])
-    ;; d!
-    ;;
-    ;; turnes into:
-    ;; r
-    ;; a
-    ;; d!
     \newline (let [point-x (first point)
                    point-y (second point)
                    current-line (buffer point-y)
@@ -46,6 +75,10 @@
                    the-whole-new-line (into above-current-plus-rest-of-current every-line-below-current-line)]
                the-whole-new-line)
 
+    :backspace (delete-char-backwards @current-buffer point)
+                                        ;(rad.core/move-point-backwards! 1)
+
+
     ;; else
     (assoc buffer (second point) (insert-char-in-line
                                   (buffer (second point)) ;y - line
@@ -58,6 +91,7 @@
   [point alphanumeric]
   (swap! current-buffer
          (fn [_] (insert-char-in-buffer @current-buffer point (make-character alphanumeric)))))
+
 
 (defn buffer?
   "Returns true if buffer is a proper buffer, else false"

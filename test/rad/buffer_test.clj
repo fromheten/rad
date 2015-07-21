@@ -69,6 +69,20 @@
          (insert-char-in-buffer @example-buffer [2 1] \newline)
          [[\r \a] [\d \!] []]))))
 
+(deftest deleting-chars-in-buffers
+  (testing "deleting a char from a line"
+    (is (=
+         (delete-char-in-line [\r \a \d] 1)
+         [\r \d])))
+  (testing "deleting a char from a buffer"
+    (is (=
+         [[\r \a] [\!]]
+         (delete-char-in-buffer @example-buffer [0 1]))))
+  (testing "deleting a char backwards (as with the backspace key)"
+    (is (=
+         [[\r \a] [\!]]
+         (delete-char-backwards @example-buffer [1 1])))))
+()
 (deftest print-buffer-tests
   (testing "printing a line"
     (is (=
