@@ -40,7 +40,9 @@
 (defn delete-char-backwards
   "Deletes a char in a buffer one column before point-x"
   [buffer point]
-  (delete-char-in-buffer buffer [(dec (first point)) (second point)]))
+  (if (not (= (first point) 0))
+    (delete-char-in-buffer buffer [(dec (first point)) (second point)])
+    buffer))
 
 (defn delete-char-backwards!
   "Deletes a char backwards from @point, and saves it to @current-buffer"

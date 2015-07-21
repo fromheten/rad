@@ -82,7 +82,7 @@
     (is (=
          [[\r \a] [\!]]
          (delete-char-backwards @example-buffer [1 1])))))
-()
+
 (deftest print-buffer-tests
   (testing "printing a line"
     (is (=
