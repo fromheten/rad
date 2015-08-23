@@ -1,12 +1,15 @@
 (ns rad.core
   (:gen-class)
-  (:require [rad.terminal :as terminal]
+  (:require [rad.package]
+            [rad.terminal :as terminal]
             [rad.swt]
             [rad.buffer :as buffer]))
 
 ;; point is x & y position of the point (or cursor)
 (def point (atom [0 0]))
 (declare sync-frontend-cursor-to-point-atom! move-point-backwards! move-point-backwards)
+
+(defn log [message] (spit ))
 
 (defn move-point-backwards
   "Returns point 'steps' steps backwards until it hits a beginning-of-line"
@@ -70,28 +73,34 @@
 
   Todos:
   * Make it front-end agnostic - now it depends on many things from the terminal front end"
-  [key] (do
-          (condp = key
-            :enter (do
-                     (buffer/insert-char! @point \newline)
-                     ;; move point to one line down x=0, y=y+1
-                     (reset! point [0 (+ 1 (second @point))])
-                     (sync-frontend-cursor-to-point-atom!))
-            :backspace (do
-                         (buffer/delete-char-backwards! @point)
-                         (move-point-backwards! 1))
+  [key]
+  (rad.package/run-thru-list-of-fns
+   key
+   (rad.package/get-input-fns-from-package-list
+    @rad.package/global-package-list))
+  (do
+    (println "kool")
+    (condp = key
+      :enter (do
+               (buffer/insert-char! @point \newline)
+               ;; move point to one line down x=0, y=y+1
+               (reset! point [0 (+ 1 (second @point))])
+               (sync-frontend-cursor-to-point-atom!))
+      :backspace (do
+                   (buffer/delete-char-backwards! @point)
+                   (move-point-backwards! 1))
 
-            ;; else
-            (do  (buffer/insert-char! @point key)
-                 (move-point-forward! 1)))
+      ;; else
+      (do  (buffer/insert-char! @point key)
+           (move-point-forward! 1)))
 
-          (println (str "keypress: " key ", point: " @point))
-          (terminal/render-buffer! @buffer/current-buffer terminal/scr)))
+    (println (str "keypress: " key ", point: " @point))
+    (terminal/render-buffer! @buffer/current-buffer terminal/scr)))
 
 (defn -main []
   (do
     (println "Welcome to rad")
-;    (rad.swt/start-gui-threaded))
+    ;; (rad.swt/start-gui-threaded))
 
     (terminal/init-terminal! terminal/scr)
-    (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress!)))
+    (terminal/get-keypress-keepalive-loop terminal/scr rad.core/handle-keypress!)))

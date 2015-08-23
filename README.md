@@ -4,7 +4,7 @@
 a bunch of functions to manipulate a data structure I call 'buffer'.
 If you know what a rad buffer is, you know everything there is to know about `rad`.
 
-* A `rad` buffer is a list of lines.
+* A `rad` buffer is a vector of lines.
 
 * Lines are vectors of chars.
 
@@ -40,7 +40,17 @@ At the moment it does not do very much. If you want to run the program, follow t
 At this stage, the program can only edit one buffer (an atom saved at `rad.buffer/current-buffer`).
 You can insert characters, make newlines (with Enter) and delete characters with backspace.
 
-The next step is to implement the package system, which have the same features, but be radically simpler (and leaning closer to immutability) than Emacs modes, Atom packages, Vim scripts & Eclipse plugins. More on this in the next release :). 
+The next step is to implement the package system, which have the same features, but be radically simpler (and leaning closer to immutability) than Emacs modes, Atom packages, Vim scripts & Eclipse plugins. More on this in the next release :).
+
+## Packages
+
+Rad has a minimal core to bootstrap itself, and and a simple & safe package loading system.
+All other functionality is implemented in packages.
+
+By default, rad loads all packages in `~/.rad/packages/`.
+Later I will make a package-management package.
+
+For more information on how packages work, please read [Packages.md](Packages.md).
 
 ## Why?
 
@@ -55,7 +65,7 @@ is line-based, unlike `emacs` buffers (where line numbers (`linum-mode`) are exp
 
 It is also written in [Clojure](http://clojure.org). I hope to make it
 better performing than `emacs`, thanks to Clojures `core.async` and easy
-to use `go`-blocks. I also have an idea about wrapping each render-line (will be there in the future!) in a call to `memoize`, and maybe making the editor orders of magnitudes faster at interactive editing. 
+to use `go`-blocks. I also have an idea about wrapping each render-line (will be there in the future!) in a call to `memoize`, and maybe making the editor orders of magnitudes faster at interactive editing.
 
 Last but not least, I hope to let it feel modern. You should be able
 to use `rad` with you keyboard only, but it should have 'normal' keyboard
