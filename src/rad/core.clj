@@ -2,7 +2,8 @@
   (:gen-class)
   (:require [rad.terminal :as terminal]
             [rad.swt]
-            [rad.buffer :as buffer]))
+            [rad.buffer :as buffer]
+            [rad.mode]))
 
 ;; point is x & y position of the point (or cursor)
 (def point (atom [0 0]))
@@ -65,7 +66,7 @@
     (not (nil? (re-matches #"^[0-9a-zA-Z ]+$" (str char))))
     false))
 
-(defn handle-keypress!
+(defn insert-mode-handle-keypress!
   "Takes a key press, and delegates it into the proper action
 
   Todos:
@@ -87,6 +88,11 @@
 
           (println (str "keypress: " key ", point: " @point))
           (terminal/render-buffer! @buffer/current-buffer terminal/scr)))
+
+(defn handle-keypress! [key]
+  (if (= :command @rad.mode/current-mode)
+    (rad.mode/command-mode-handle-key! key)
+    (insert-mode-handle-keypress! key)))
 
 (defn -main []
   (do

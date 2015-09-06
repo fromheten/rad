@@ -15,7 +15,6 @@
   [scr]
   (s/start scr)
 
-  (s/put-string scr 10 10 "hello")
   (s/redraw scr))
 
 (defn move-cursor-in-terminal!
