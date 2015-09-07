@@ -1,10 +1,7 @@
 * Roadmap / todo-list
-** TODO *earmuff* important vars such as buffer/current-buffer, point, etc
-** TODO Move point-handling functions into their own ns, instead of rad.core
+** DONE Move point-handling functions into their own ns, instead of rad.core
+   CLOSED: [2015-09-07 Mon 21:36]
 ** TODO Make plugin system (basically (load-file) every file in ~/.rad/plugins
-** DONE handle-keypress! understand backspace (delete backwards -> move cursor 1 step back
-   CLOSED: [2015-07-21 Tue 21:14]
-*** TODO Make rad.core/move-point-backwards (the pure one)
-** DONE move-point-forward should take an arbitrary number of steps (not does 1)
-   CLOSED: [2015-07-21 Tue 21:15]
-** TODO Update Readme
+** TODO Start terminal gui in thread
+** TODO Use SWT instead
+** TODO Mode switching
