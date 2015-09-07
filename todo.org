@@ -3,7 +3,10 @@
    CLOSED: [2015-09-07 Mon 21:36]
 ** DONE Move insert-mode-handle-key to rad.mode
    CLOSED: [2015-09-07 Mon 21:47]
+** DONE Mode switching
+   CLOSED: [2015-09-07 Mon 22:05]
+
+
 ** TODO Make plugin system (basically (load-file) every file in ~/.rad/plugins
 ** TODO Start terminal gui in thread
 ** TODO Use SWT instead
-** TODO Mode switching

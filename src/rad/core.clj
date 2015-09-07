@@ -14,7 +14,6 @@
     (not (nil? (re-matches #"^[0-9a-zA-Z ]+$" (str char))))
     false))
 
-
 (defn handle-keypress! [key]
   (if (= :command @rad.mode/current-mode)
     (rad.mode/command-mode-handle-key! key)
