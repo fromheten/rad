@@ -8,21 +8,20 @@
             [rad.buffer :as buffer]))
 (require '[lanterna.screen :as s])
 
-;;(def scr (s/get-screen :text))
-(def scr (s/get-screen)) ;; just for now
+(def scr (s/get-screen :text))
+;;(def scr (s/get-screen)) ;; just for now
 
 (defn init-terminal!
   [scr]
   (s/start scr)
 
-  (s/put-string scr 10 10 "hello")
   (s/redraw scr))
 
 (defn move-cursor-in-terminal!
   [point] (s/move-cursor scr (first point) (second point)))
 
 (defn render-buffer!
-  "Renders a buffer to the terminal. This happens a lot. Fixme remomve dependency on rad.buffer"
+  "Renders a buffer to the terminal. This happens a lot"
   [buffer scr]
   (do
     (s/clear scr)

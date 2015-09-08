@@ -35,6 +35,11 @@
            (vector current-line-without-deleted-char))
      all-lines-below-current)))
 
+(defn delete-char-in-current-buffer!
+  "Does what it says, and mutates the current-buffer"
+  [point]
+  (reset! current-buffer (delete-char-in-buffer @current-buffer point)))
+
 (defn delete-char-backwards
   "Deletes a char in a buffer one column before point-x"
   [buffer point]
@@ -46,6 +51,11 @@
   "Deletes a char backwards from @point, and saves it to @current-buffer"
   [point]
   (reset! current-buffer (delete-char-backwards @current-buffer point)))
+
+(defn delete-char-at-current-point!
+  "Deleter whatever is in front of point. That's the point!"
+  []
+  (delete-char-in-current-buffer! [0 0])) ; FIXME FIXME FIXME
 
 (defn insert-char-in-line
   "Returns a new line with column 'point' replaces with new alphanumeric"
