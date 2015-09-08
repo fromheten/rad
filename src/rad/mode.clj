@@ -36,16 +36,17 @@
     key
     (get (command-mode-key-map) key)))
 
-(def current-command-state (atom nil))
+(def current-command-state (atom nil))  ; if this in not fn?, an action will be taken
 (defn command-mode-handle-key! [key]
-  (println key)
   (let [command (get-value-for-key key)]
+    (println (str key ": " command))
     (if (fn? @current-command-state)
       (if (nil? command)
         (reset! current-command-state nil)
-        (reset! current-command-state (@current-command-state command)))
-      (reset! current-command-state (command))))
-  (println (str "keypress: " key))
+        (reset! current-command-state
+                (@current-command-state command))) ; If this function returns a funciton, you can chain actions
+      (if (fn? command)
+        (reset! current-command-state (command)))))
   (rad.terminal/render-buffer! @rad.buffer/current-buffer rad.terminal/scr))
 
 (defn insert-mode-handle-keypress!
@@ -53,32 +54,23 @@
 
   Todos:
   * Make it front-end agnostic - now it depends on many things from the terminal front end"
-  [key] (do
-          (condp = key
-            :escape (change-mode! :command)
-            :enter (do
-                     (rad.buffer/insert-char! @rad.point/point \newline)
-                     ;; move point to one line down x=0, y=y+1
-                     (reset! rad.point/point [0 (+ 1 (second @rad.point/point))])
-                     (rad.point/sync-frontend-cursor-to-point-atom!))
-            :backspace (do
-                         (rad.buffer/delete-char-backwards! @rad.point/point)
-                         (rad.point/move-point-backwards! 1))
+  [key]
+  (do
+    (condp = key
+      :escape (change-mode! :command)
+      :enter (do
+               (rad.buffer/insert-char! @rad.point/point \newline)
+               ;; move point to one line down x=0, y=y+1
+               (reset! rad.point/point [0 (+ 1 (second @rad.point/point))])
+               (rad.point/sync-frontend-cursor-to-point-atom!))
+      :backspace (do
+                   (rad.buffer/delete-char-backwards! @rad.point/point)
+                   (rad.point/move-point-backwards! 1))
 
-            ;; else
-            (do  (rad.buffer/insert-char! @rad.point/point key)
-                 (rad.point/move-point-forward! 1)))
+      ;; else
+      (if (char? key)
+        (do (rad.buffer/insert-char! @rad.point/point key)
+            (rad.point/move-point-forward! 1))))
 
-          (println (str "keypress: " key ", point: " @rad.point/point))
-          (rad.terminal/render-buffer! @rad.buffer/current-buffer rad.terminal/scr)))
-
-;; (deref current-command-state)
-;; (handle-key! :r)
-;; (handle-key! 3)
-;; (handle-key! :esc)
-
-
-;; (handle-key! :d)
-;; (reset! rad.buffer/current-buffer [[\r \a \d \. \i \s \. \a \n \. \e \d \i \t \o \r]
-;;                                    [\s \e \c \o \n \d \. \l \i \n \e]])
-;; @rad.core/point
+    (println (str "keypress: " key ", point: " @rad.point/point))
+    (rad.terminal/render-buffer! @rad.buffer/current-buffer rad.terminal/scr)))
