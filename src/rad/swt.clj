@@ -1,6 +1,7 @@
 ;; Swt front end
 ;; This namespace describes functions for displaying rad buffers in SWT
 (ns rad.swt
+  (:require [clojure.core.async :as async :refer [<!!]])
   (:import [org.eclipse.swt SWT]
            [org.eclipse.swt.widgets Display Shell Listener]
            [org.eclipse.swt.custom StyledText]
@@ -27,7 +28,7 @@
           (.sleep display))
         (recur)))))
 
-(defn begin []
+(defn begin [input-chan text-to-display-chan]
   (let [display (Display.)
         shell (Shell. display)
         text-area (org.eclipse.swt.custom.StyledText. shell (. SWT BORDER))]
@@ -36,13 +37,12 @@
     (.setSize shell 700 700)
     (.setBounds text-area (.getClientArea shell))
     (.setFont text-area (Font. display "Courier" 14 (. SWT NORMAL)))
-    (.setText text-area "Hello Jesper! \nThank you for helping me with Java :D")
+    (.setText text-area (str (<!! text-to-display-chan)))
 
     ;; listen to input
     (.addListener text-area (. SWT KeyDown)
                   (proxy [Listener] []   ;; extend Java class Listener
                     (handleEvent [event] ;; with method 'handleEvent'
-                      (println (str "keydown: " (.character event))))))
-
+                      (println (str "keydown: " (.keyCode event))))))
     (.open shell)
     (swt-loop display shell)))

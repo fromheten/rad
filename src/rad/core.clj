@@ -1,6 +1,7 @@
 (ns rad.core
   (:gen-class)
-  (:require [rad.terminal :as terminal]
+  (:require [clojure.core.async :as async :refer [chan go >! <!]]
+            [rad.terminal :as terminal]
             [rad.swt]
             [rad.buffer :as buffer]))
 
@@ -22,9 +23,12 @@
               (buffer/insert-char ["point"] key))
             (terminal/render-buffer! buffer/sample-buffer terminal/scr)))
 
+(def text-to-display-chan (chan))
+(def input-char-chan (chan))
+(go (>! text-to-display-chan "Rad is meant to be hacked"))
 (defn -main []
   (do (println "Welcome to rad")
-      (rad.swt/begin))
+      (rad.swt/begin input-char-chan text-to-display-chan))
   ;;  (do (terminal/init-terminal! terminal/scr)
   ;;      (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress!))
   )
