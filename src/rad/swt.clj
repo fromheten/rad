@@ -5,6 +5,7 @@
            [org.eclipse.swt.widgets Display Shell Listener]
            [org.eclipse.swt.custom StyledText]
            [org.eclipse.swt.layout GridLayout FillLayout]
+           [org.eclipse.swt.graphics Font]
            [org.eclipse.swt.events ShellAdapter]))
 
 (defn create-shell [display shell]
@@ -34,6 +35,7 @@
     ;;(.setBounds text-area 10 10 200 200)
     (.setSize shell 700 700)
     (.setBounds text-area (.getClientArea shell))
+    (.setFont text-area (Font. display "Courier" 14 (. SWT NORMAL)))
     (.setText text-area "Hello Jesper! \nThank you for helping me with Java :D")
 
     ;; listen to input
