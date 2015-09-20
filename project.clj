@@ -6,6 +6,7 @@
   :jvm-opts ["-XstartOnFirstThread"]
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [clojure-lanterna "0.9.4"]
-                 [org.eclipse.swt/org.eclipse.swt.cocoa.macosx.x86_64 "4.4"]]
+                 [org.eclipse.swt/org.eclipse.swt.cocoa.macosx.x86_64 "4.4"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]]
   :repositories [["swt-repo" "https://raw.githubusercontent.com/maven-eclipse/swt-repo/master/"]]
   :main rad.core)

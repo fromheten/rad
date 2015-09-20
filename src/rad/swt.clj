@@ -2,12 +2,13 @@
 ;; This namespace describes functions for displaying rad buffers in SWT
 (ns rad.swt
   (:import [org.eclipse.swt SWT]
-           [org.eclipse.swt.widgets Display Shell Text Listener]
-           [org.eclipse.swt.layout GridLayout]
+           [org.eclipse.swt.widgets Display Shell Listener]
+           [org.eclipse.swt.custom StyledText]
+           [org.eclipse.swt.layout GridLayout FillLayout]
            [org.eclipse.swt.events ShellAdapter]))
 
 (defn create-shell [display shell]
-  (let [layout (GridLayout.)]
+  (let [layout (FillLayout.)]
     (doto shell
       (.setText "rad")
       (.setLayout layout)
@@ -28,9 +29,7 @@
 (defn begin []
   (let [display (Display.)
         shell (Shell. display)
-        multi-line-constant 2
-        text-area (Text. shell multi-line-constant) ;; 2 Means multi li
-        ]
+        text-area (org.eclipse.swt.custom.StyledText. shell (. SWT BORDER))]
     (create-shell display shell)
     ;;(.setBounds text-area 10 10 200 200)
     (.setSize shell 700 700)
@@ -41,7 +40,7 @@
     (.addListener text-area (. SWT KeyDown)
                   (proxy [Listener] []   ;; extend Java class Listener
                     (handleEvent [event] ;; with method 'handleEvent'
-                      (println "HELLO!!!!"))))
+                      (println (str "keydown: " (.character event))))))
 
     (.open shell)
     (swt-loop display shell)))
