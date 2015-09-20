@@ -28,7 +28,8 @@
 (defn begin []
   (let [display (Display.)
         shell (Shell. display)
-        text-area (Text. shell 2) ;; 2 Means multi li
+        multi-line-constant 2
+        text-area (Text. shell multi-line-constant) ;; 2 Means multi li
         ]
     (create-shell display shell)
     ;;(.setBounds text-area 10 10 200 200)
