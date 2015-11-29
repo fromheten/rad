@@ -1,17 +1,19 @@
 (ns rad.core
-  (:gen-class))                         ;:gen-class here means this
-                                        ;namespace will be compiled
-                                        ;into a .class file if the aot
-                                        ;task is run
+  (:gen-class))
 
+(require '[clojure.core.async :as a])
 (require '[rad.frontend.terminal :as term])
-(defn init-terminal-frontend! []
-  (term/init-terminal! term/scr)
-  (term/render-buffer! ["Rad is meant" "to be hacked"] term/scr))
 
-(defn -main [& args]                    ;This -main function will
-                                        ;become the main method if we
-                                        ;set up this namespace to aot,
-                                        ;and point jar -m at it
-  (println "Varmt välkommen till rad")
-  (init-terminal-frontend!))
+(def io-c (term/init-terminal! term/scr))
+
+;; Whenever some input comes, handle that
+(a/go
+  (while true
+    ;; (rad.mode/handle-keypress! (:in-chan io-c))
+    (println (:in-chan io-c))  ;; Time to write rad.mode...
+    ))
+
+(defn -main [& args]
+  (println "Varmt välkommen till rad"))
+
+;; interesting snippet https://github.com/clojure-emacs/cider#using-embedded-nrepl-server
