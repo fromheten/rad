@@ -39,8 +39,6 @@
       (let [buffer (a/<! things-to-print-chan)]
         (render-buffer! buffer scr)))))
 
-(init-terminal! scr)
-
 (comment
   (render-buffer! example-buffer scr)
   (a/go (a/>! things-to-print-chan ["example" "buffer"]))
