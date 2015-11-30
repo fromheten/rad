@@ -35,7 +35,14 @@
     ;; (assoc buffer (point-y))
     (assoc buffer point-y new-line)))
 
+(defn insert-char!
+  "Inserts one-char input at @point, and moves @point forward"
+  [^String input]
+  (do (reset!
+       rad.buffer/current-buffer
+       (rad.buffer/insert-char-at-point @rad.buffer/current-buffer
+                                        @rad.buffer/point
+                                        input))))
+
 #_(= ["Rad is meant" "tho be hacked"]
      (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h"))
-
-#_(deref current-buffer)

@@ -10,11 +10,7 @@
 ;; FIXME don't put hard coded mode-switching key, and don't make it escape
 (defn insert-mode-handle-keypress [^String input]
   (println (str "Handling input: " input))
-  (reset!
-   rad.buffer/current-buffer
-   (rad.buffer/insert-char-at-point @rad.buffer/current-buffer
-                                    @rad.buffer/point
-                                    input)))
+  (rad.buffer/insert-char! input))
 
 
 ;;; Command mode
