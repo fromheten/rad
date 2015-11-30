@@ -1,7 +1,15 @@
-(ns rad.buffer)
+(ns rad.buffer
+  (:require [clojure.core.async :as a :refer [chan go >!]]))
 
 (def current-buffer (atom ["Rad is meant"
                            "to be hacked"]))
+(def buffer-updates-channel
+  (let [channel (chan)]
+    (add-watch current-buffer :some-key
+               (fn [key atom old-state new-state]
+                 (go (>! channel new-state))))
+    channel))
+
 (def point (atom [0 0])) ; move me to another ns
 
 (defn delete-char-at-point
@@ -29,3 +37,5 @@
 
 #_(= ["Rad is meant" "tho be hacked"]
      (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h"))
+
+#_(deref current-buffer)

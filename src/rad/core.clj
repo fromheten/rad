@@ -1,17 +1,23 @@
 (ns rad.core
   (:gen-class))
 
-(require '[clojure.core.async :as a])
+(require '[clojure.core.async :as a :refer [go chan >! <!]])
 (require '[rad.frontend.terminal :as term])
 
-(def io-c (term/init-terminal! term/scr))
+(require '[rad.mode])
 
-;; Whenever some input comes, handle that
-(a/go
-  (while true
-    ;; (rad.mode/handle-keypress! (:in-chan io-c))
-    (println (:in-chan io-c))  ;; Time to write rad.mode...
-    ))
+(def io-c (term/init-terminal! term/scr))
+(def in-c (:in-chan io-c))
+(def out-c (:print-chan io-c))
+
+(go (a/>! out-c [(str (+ 1 (rand)))]))
+
+;; Whenever the current-buffer updates, show to the user
+(go (while true
+      (>! out-c
+          (<! rad.buffer/buffer-updates-channel))))
+
+
 
 (defn -main [& args]
   (println "Varmt välkommen till rad"))
