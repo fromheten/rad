@@ -20,8 +20,14 @@
         line-after-deletion (str (.substring string 0 point-x)
                                  (.substring string (inc point-x) (.length string)))]
     (assoc buffer (second point) line-after-deletion)))
-
 #_(delete-char-at-point @current-buffer [0 1])
+
+(defn delete-char!
+  "Opposite of insert-char!"
+  ([] (reset!
+       current-buffer
+       (delete-char-at-point @current-buffer
+                             @point))))
 
 (defn insert-char-at-point
   [buffer point char]
@@ -39,10 +45,10 @@
   "Inserts one-char input at @point, and moves @point forward"
   [^String input]
   (do (reset!
-       rad.buffer/current-buffer
-       (rad.buffer/insert-char-at-point @rad.buffer/current-buffer
-                                        @rad.buffer/point
-                                        input))))
+       current-buffer
+       (insert-char-at-point @current-buffer
+                             @point
+                             input))))
 
 #_(= ["Rad is meant" "tho be hacked"]
      (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h"))
