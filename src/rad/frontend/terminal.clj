@@ -22,6 +22,15 @@
                (inc index))))
     (s/redraw scr)))
 
+(def point-sync-chan (a/chan))
+(def point-sync-thread
+  (a/go
+    (while true
+      (let [point (a/<! point-sync-chan)]
+        (println point)
+        (s/move-cursor scr (first point) (second point))
+        (s/redraw scr)))))
+
 (def input-thread
   (a/go
     (while true
@@ -39,7 +48,8 @@
   (s/redraw scr)
   (render-buffer! ["Rad is meant" "to be hacked"] scr)
   {:print-chan print-chan
-   :in-chan in-chan})
+   :in-chan in-chan
+   :point-chan point-sync-chan})
 
 (comment
   (render-buffer! example-buffer scr)
