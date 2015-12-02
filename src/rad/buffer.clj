@@ -10,8 +10,6 @@
                  (go (>! channel new-state))))
     channel))
 
-(def point (atom [0 0])) ; move me to another ns
-
 (defn delete-char-at-point
   "Returns buffer without the char at point"
   [buffer point]
@@ -24,10 +22,10 @@
 
 (defn delete-char!
   "Opposite of insert-char!"
-  ([] (reset!
-       current-buffer
-       (delete-char-at-point @current-buffer
-                             @point))))
+  ([point] (reset!
+            current-buffer
+            (delete-char-at-point @current-buffer
+                                  point))))
 
 (defn insert-char-at-point
   [buffer point char]
@@ -35,19 +33,21 @@
         point-y (second point)
 
         line (buffer point-y)
-        first-half-of-line (.substring line 0 point-y)
-        second-half-of-line (.substring line point-y (.length line))
+        first-half-of-line (.substring line 0 point-x)
+        second-half-of-line (.substring line point-x (.length line))
+
+        ;; on next line something fishy is happening
         new-line (str first-half-of-line char second-half-of-line)]
     ;; (assoc buffer (point-y))
     (assoc buffer point-y new-line)))
 
 (defn insert-char!
-  "Inserts one-char input at @point, and moves @point forward"
-  [^String input]
+  "Inserts one-char input at point"
+  [^String input point]
   (do (reset!
        current-buffer
        (insert-char-at-point @current-buffer
-                             @point
+                             point
                              input))))
 
 #_(= ["Rad is meant" "tho be hacked"]

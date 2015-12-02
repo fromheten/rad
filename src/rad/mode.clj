@@ -1,19 +1,18 @@
 (ns rad.mode
-  (:require [rad.buffer]))
+  (:require [rad.buffer]
+            [rad.point]))
 
 (def current-mode (atom :insert))
 (defn change-mode-to!
   [mode] (reset! current-mode mode))
 
 ;;; Insert mode
-
-;; FIXME don't put hard coded mode-switching key, and don't make it escape
 (defn insert-mode-handle-keypress [input]
   (if (keyword? input)
     (if (= :backspace input)
-      (rad.buffer/delete-char!))
-    (rad.buffer/insert-char! input)))
-
+      (rad.buffer/delete-char! @rad.point/point))
+    (do (rad.buffer/insert-char! input @rad.point/point)
+        (rad.point/move-point-forward!))))
 
 ;;; Command mode
 
