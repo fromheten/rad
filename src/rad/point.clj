@@ -6,7 +6,6 @@
   (let [channel (chan)]
     (add-watch point :some-key-whatever
                (fn [key atom old-state new-state]
-                 (println (str "new point:" new-state))
                  (a/put! channel new-state)))
     channel))
 

@@ -27,7 +27,6 @@
   (a/go
     (while true
       (let [point (a/<! point-sync-chan)]
-        (println point)
         (s/move-cursor scr (first point) (second point))
         (s/redraw scr)))))
 
