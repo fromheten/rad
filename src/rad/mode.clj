@@ -7,13 +7,12 @@
   [mode] (reset! current-mode mode))
 
 ;;; Insert mode
-
-;; FIXME don't put hard coded mode-switching key, and don't make it escape
-(defn insert-mode-handle-keypress [^String input]
-  (do (println (str "Handling input: " input))
-      (rad.buffer/insert-char! input @rad.point/point)
-      (rad.point/move-point-forward!)))
-
+(defn insert-mode-handle-keypress [input]
+  (if (keyword? input)
+    (if (= :backspace input)
+      (rad.buffer/delete-char! @rad.point/point))
+    (do (rad.buffer/insert-char! input @rad.point/point)
+        (rad.point/move-point-forward!))))
 
 ;;; Command mode
 

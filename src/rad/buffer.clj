@@ -15,11 +15,21 @@
   [buffer point]
   (let [string (nth buffer (second point))
         point-x (first point)
-        line-after-deletion (str (.substring string 0 point-x)
-                                 (.substring string (inc point-x) (.length string)))]
+        line-after-deletion (str
+                             (.substring string 0 point-x)
+                             (try (.substring string (inc point-x) (.length string))
+                                  (catch java.lang.StringIndexOutOfBoundsException
+                                      e
+                                    "")))]
     (assoc buffer (second point) line-after-deletion)))
-
 #_(delete-char-at-point @current-buffer [0 1])
+
+(defn delete-char!
+  "Opposite of insert-char!"
+  ([point] (reset!
+            current-buffer
+            (delete-char-at-point @current-buffer
+                                  point))))
 
 (defn insert-char-at-point
   [buffer point char]
@@ -39,11 +49,10 @@
   "Inserts one-char input at point"
   [^String input point]
   (do (reset!
-       rad.buffer/current-buffer
+       current-buffer
        (insert-char-at-point @current-buffer
                              point
                              input))))
-
 
 #_(= ["Rad is meant" "tho be hacked"]
      (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h"))
