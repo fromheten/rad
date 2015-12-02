@@ -1,3 +1,30 @@
+# PLEASE NOTE
+Rad is being re-worked in the branch `re-boot`. No code from this branch will survive.
+
+## re-boot
+
+In the `re-boot` branch, I have
+
+* Ditched `lein` for `boot`. It's not you, it's me.
+* Simpler `buffer` data structure - now it's a list of strings (rather than a list of lists of chars).
+
+Example buffer now looks like this:
+
+``` Clojure
+["Rad is meant"
+"to be hacked"]
+```
+
+That is the same data structure as `vim` and `Atom` use.
+
+* `core.async` all the things
+
+Before I let the UI block the main, and only thread (chesus christ!).
+
+Now the frontend has 3 (at least) channels that it exposes (what-to-print, where-point-is & keyboard-input).
+
+Everything is async. That is the reason I created this program...
+
 # rad
 
 `rad` is a programming enviroment and a text editor. You could say that it is
@@ -40,7 +67,7 @@ At the moment it does not do very much. If you want to run the program, follow t
 At this stage, the program can only edit one buffer (an atom saved at `rad.buffer/current-buffer`).
 You can insert characters, make newlines (with Enter) and delete characters with backspace.
 
-The next step is to implement the package system, which have the same features, but be radically simpler (and leaning closer to immutability) than Emacs modes, Atom packages, Vim scripts & Eclipse plugins. More on this in the next release :). 
+The next step is to implement the package system, which have the same features, but be radically simpler (and leaning closer to immutability) than Emacs modes, Atom packages, Vim scripts & Eclipse plugins. More on this in the next release :).
 
 ## Why?
 
@@ -55,7 +82,7 @@ is line-based, unlike `emacs` buffers (where line numbers (`linum-mode`) are exp
 
 It is also written in [Clojure](http://clojure.org). I hope to make it
 better performing than `emacs`, thanks to Clojures `core.async` and easy
-to use `go`-blocks. I also have an idea about wrapping each render-line (will be there in the future!) in a call to `memoize`, and maybe making the editor orders of magnitudes faster at interactive editing. 
+to use `go`-blocks. I also have an idea about wrapping each render-line (will be there in the future!) in a call to `memoize`, and maybe making the editor orders of magnitudes faster at interactive editing.
 
 Last but not least, I hope to let it feel modern. You should be able
 to use `rad` with you keyboard only, but it should have 'normal' keyboard
