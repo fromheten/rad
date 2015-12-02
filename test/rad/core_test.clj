@@ -4,4 +4,4 @@
 
 (deftest testing-tests
   (testing "That the test system is set up"
-    (= 1 1)))
+    (is (= 1 1))))
