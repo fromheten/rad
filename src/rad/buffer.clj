@@ -15,8 +15,12 @@
   [buffer point]
   (let [string (nth buffer (second point))
         point-x (first point)
-        line-after-deletion (str (.substring string 0 point-x)
-                                 (.substring string (inc point-x) (.length string)))]
+        line-after-deletion (str
+                             (.substring string 0 point-x)
+                             (try (.substring string (inc point-x) (.length string))
+                                  (catch java.lang.StringIndexOutOfBoundsException
+                                      e
+                                    "")))]
     (assoc buffer (second point) line-after-deletion)))
 #_(delete-char-at-point @current-buffer [0 1])
 
