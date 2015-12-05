@@ -26,7 +26,9 @@
 
 
 (defn command-mode-handle-keypress!
-  "Builds a command in keystroke-accumulator, and if it points to a fn, eval it"
+  "Builds a command in keystroke-accumulator, and if it points to a fn, eval it.
+  Exploits the fact that (get-in) takes a vector as an argument, so builds the
+  query (keystroke-accumulator) in the same format. Homoiconicity is the shit."
   [input-char]
   (let [key-map-node-or-leaf (swap! keystroke-accumulator conj input-char)
         fn-or-map (get-in key-map @keystroke-accumulator)]
