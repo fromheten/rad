@@ -111,16 +111,19 @@ You now have 47 inputs, at your fingertips (on my keyboard). Combine with modifi
 When using a mouse, you have two possible inputs (right and left click).
 
 ### Dissatisfaction with current programmers enviroments
+
 #### Vim
 * Not easy to extend
 * Not a good enviroment to build apps
 * You have to remember what mode you are in
+
 #### Emacs
 * Gap buffers instead of line-based one (like rad, vim & atom)
 (This is the reason why showing line numbers is slow in Emacs)
 * Blocking all the time, nothing is async
 * Emacs pinky. Your pinky finger is always resting on `Ctrl` or `Meta`. That leaves a 10-fingered person with only 9 fingers available.
 * My coworkers hate pairing with me
+
 #### Atom
 * You end up using the mouse a lot
 * Not a lisp (still an amazing editor though)
