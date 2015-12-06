@@ -1,1 +1,0 @@
-* SWT by Eclipse Foundation [https://clojars.org/org.eclipse/swt-cocoa-macosx-x86_64]

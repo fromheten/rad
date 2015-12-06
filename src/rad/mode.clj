@@ -1,76 +1,80 @@
 (ns rad.mode
-  "State and functions for entering/leaving modes such as 'insert mode' and 'command mode'."
   (:require [rad.buffer]
-            [rad.terminal]
-            [rad.point]))
+            [rad.point]
+            [clojure.core.async :as a :refer [go go-loop chan timeout <! >!]]))
 
-;; A rad command is a function. If it returns another function, it will not evaluate. If you give it something which is not fn?, it will evaluate.
-;; To make commands which take arguments - they return a function that takes a function. This creates a chain, and that chain is the arguments.
+(def current-mode (atom :insert))
+(defn change-mode-to!
+  "Sets current-mode to a new mode. Defaults to insert mode"
+  ([] (change-mode-to! :insert))
+  ([mode] (println "changing mode: " (reset! current-mode mode))))
 
-(def current-mode (atom :command))           ; nil deafult to insert mode ; FIXME
-(defn change-mode!
-  ([] (change-mode! nil))
-  ([mode]  (reset! current-mode mode)))
+;;; Insert mode
+(defn insert-mode-handle-keypress! [input]
+  (if (keyword? input)
+    (condp = input
+      :backspace (rad.buffer/delete-char! @rad.point/point)
+      :tab (change-mode-to! :command))
+    (do (rad.buffer/insert-char! input @rad.point/point)
+        (rad.point/move-point-forward!))))
 
-(defn rep
-  "Runs f n times"
-  [n f & acc]
-  (if (< 0 n)
-    (recur (dec n) f (conj acc (f)))
-    acc))
+;;; Command mode
 
-(defn r []                              ;make me a macro
-  (fn [n]
-    (fn [f]
-      (rep n f))))
+;; Timeout code
+;; This block is a little hairy, but here's the gist of it:
+;; When in command mode, one second of inactivity puts you back in insert mode
+;; Soon putting command mode in it's own ns would make sense
 
-(defn command-mode-key-map [] {\r r
-                               \d rad.buffer/delete-char-at-current-point!
-                               :escape change-mode!})
+(def last-keypress-timestamp (atom (System/currentTimeMillis)))
+(defn touch-timestamp! [timestamp-atom]
+  (reset! timestamp-atom (System/currentTimeMillis)))
 
-(defn get-value-for-key
-  "Translates from input key to what function/argument type should be put in the command
-  Numbers get returned as they are, when keys which have a value in the command-mode-key-map will get their value returned"
-  [key]
-  (if (number? key)
-    key
-    (get (command-mode-key-map) key)))
+(def command-mode-keypresses-chan (chan))
 
-(def current-command-state (atom nil))  ; if this in not fn?, an action will be taken
-(defn command-mode-handle-key! [key]
-  (let [command (get-value-for-key key)]
-    (println (str key ": " command))
-    (if (fn? @current-command-state)
-      (if (nil? command)
-        (reset! current-command-state nil)
-        (reset! current-command-state
-                (@current-command-state command))) ; If this function returns a funciton, you can chain actions
-      (if (fn? command)
-        (reset! current-command-state (command)))))
-  (rad.terminal/render-buffer! @rad.buffer/current-buffer rad.terminal/scr))
+(go-loop []
+  (while (= :command @current-mode)
+    (let [timeout-ch (timeout 1000)]
+      ;; One of these channels will have a value first. The first one that
+      ;; gets a value, will have it's callback evaluated.
+      ;; This means, if you press a key before the timeout is done, the first
+      ;; callback will be called. If you are inactive, rad will switch modes.
+      ;; I'm unhappy about all the mutation going on here.
+     (a/alt!
+       command-mode-keypresses-chan ([result]
+                                     (touch-timestamp! last-keypress-timestamp))
+       timeout-ch ([result] (if (not (= :insert @current-mode))
+                              (change-mode-to! :insert))))))
+  (recur))
+;; end timeout code
 
-(defn insert-mode-handle-keypress!
-  "Takes a key press, and delegates it into the proper action
+(def keystroke-accumulator (atom []))
+(def key-map {\d {\w #(println "delete word")
+                  \h #(println "delete backwards")
+                  \l #(println "delete character")}
+              \e {\e #(println "eval expression")}
+              :tab #(change-mode-to! :insert)})
 
-  Todos:
-  * Make it front-end agnostic - now it depends on many things from the terminal front end"
-  [key]
-  (do
-    (condp = key
-      :escape (change-mode! :command)
-      :enter (do
-               (rad.buffer/insert-char! @rad.point/point \newline)
-               ;; move point to one line down x=0, y=y+1
-               (reset! rad.point/point [0 (+ 1 (second @rad.point/point))])
-               (rad.point/sync-frontend-cursor-to-point-atom!))
-      :backspace (do
-                   (rad.buffer/delete-char-backwards! @rad.point/point)
-                   (rad.point/move-point-backwards! 1))
 
-      ;; else
-      (if (char? key)
-        (do (rad.buffer/insert-char! @rad.point/point key)
-            (rad.point/move-point-forward! 1))))
+(defn command-mode-handle-keypress!
+  "Builds a command in keystroke-accumulator, and if it points to a fn, eval it.
+  Exploits the fact that (get-in) takes a vector as an argument, so builds the
+  query (keystroke-accumulator) in the same format. Homoiconicity is the shit."
+  [input-char]
+  (let [key-map-node-or-leaf (swap! keystroke-accumulator conj input-char)
+        fn-or-map (get-in key-map @keystroke-accumulator)]
+    ;; go block for controlling mode timeout
+    (go (touch-timestamp! last-keypress-timestamp)
+        (>! command-mode-keypresses-chan input-char))
+    ;; Traverse the key-map tree, and if arriving on a function, eval it
+    (cond
+      (fn? fn-or-map) (do (fn-or-map)
+                          (reset! keystroke-accumulator [])
+                          (change-mode-to! :insert))
+      (nil? fn-or-map) (reset! keystroke-accumulator [])
+      :else fn-or-map)))
 
-    (println (str "keypress: " key ", point: " @rad.point/point))
-    (rad.terminal/render-buffer! @rad.buffer/current-buffer rad.terminal/scr)))
+;; common
+(defn handle-keypress! [input]
+  (condp = @current-mode
+    :insert (insert-mode-handle-keypress! input)
+    :command (command-mode-handle-keypress! input)))

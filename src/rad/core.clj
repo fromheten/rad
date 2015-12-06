@@ -1,28 +1,28 @@
 (ns rad.core
-  (:gen-class)
-  (:require [rad.terminal :as terminal]
-            [rad.swt]
-            [rad.buffer :as buffer]
-            [rad.mode]
-            [rad.point]
-            :reload-all))
+  (:gen-class))
 
-(defn alphanumeric?
-  "Returns true if char is either a letter or a number"
-  [char]
-  (if (char? char)
-    (not (nil? (re-matches #"^[0-9a-zA-Z ]+$" (str char))))
-    false))
+(require '[clojure.core.async :as a :refer [go chan >! <!]])
+(require '[rad.frontend.terminal :as term])
+(require '[rad.mode :as mode])
+(require '[rad.point :as point])
+(require '[rad.buffer :as buffer])
 
-(defn handle-keypress! [key]
-  (if (= :command @rad.mode/current-mode)
-    (rad.mode/command-mode-handle-key! key)
-    (rad.mode/insert-mode-handle-keypress! key)))
+(defn -main [& args]
+  (println "Varmt välkommen till rad")
 
-(defn -main []
-  (do
-    (println "Welcome to rad")
-;    (rad.swt/start-gui-threaded))
+  (def io-c (term/init-terminal! term/scr))
+  (def in-c (:in-chan io-c))
+  (def out-c (:print-chan io-c))
+  (def point-c (:point-chan io-c))
 
-    (terminal/init-terminal! terminal/scr)
-    (terminal/get-keypress-keepalive-loop terminal/scr handle-keypress!)))
+  (go
+    (while true
+      (a/>! out-c (<! rad.buffer/buffer-updates-channel))))
+  (go
+    (while true
+      (a/>! point-c (<! rad.point/point-update-channel))))
+  (go
+    (while true
+      (rad.mode/handle-keypress! (<! in-c)))))
+
+;; interesting snippet https://github.com/clojure-emacs/cider#using-embedded-nrepl-server
