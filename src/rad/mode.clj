@@ -42,7 +42,8 @@
      (a/alt!
        command-mode-keypresses-chan ([result]
                                      (touch-timestamp! last-keypress-timestamp))
-       timeout-ch ([result] (change-mode-to! :insert)))))
+       timeout-ch ([result] (if (not (= :insert @current-mode))
+                              (change-mode-to! :insert))))))
   (recur))
 ;; end timeout code
 
