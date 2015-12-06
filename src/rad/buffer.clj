@@ -1,125 +1,58 @@
 (ns rad.buffer
-  "Functions for dealing with rad buffers.")
+  (:require [clojure.core.async :as a :refer [chan go >!]]))
 
-(def current-buffer (atom [[\r \a]
-                           [\d \!]]))
+(def current-buffer (atom ["Rad is meant"
+                           "to be hacked"]))
+(def buffer-updates-channel
+  (let [channel (chan)]
+    (add-watch current-buffer :some-key
+               (fn [key atom old-state new-state]
+                 (go (>! channel new-state))))
+    channel))
 
-(defn make-character
-  "Takes an alphanumeric and return a character object"
-  [alphanumeric]
-  alphanumeric)
-
-(defn delete-char-in-line
-  "Returns a line with whatever is at position point-x removed"
-  [line point-x]
-  (let [each-char-except-for-point (subvec line 0 point-x)
-        second-half-of-line (subvec line (+ 1 point-x))]
-
-    ;; put htese those in one vector
-    (into each-char-except-for-point second-half-of-line)))
-
-(defn delete-char-in-buffer
-  "Deletes the character at `point' in `buffer'"
+(defn delete-char-at-point
+  "Returns buffer without the char at point"
   [buffer point]
+  (let [string (nth buffer (second point))
+        point-x (first point)
+        line-after-deletion (str
+                             (.substring string 0 point-x)
+                             (try (.substring string (inc point-x) (.length string))
+                                  (catch java.lang.StringIndexOutOfBoundsException
+                                      e
+                                    "")))]
+    (assoc buffer (second point) line-after-deletion)))
+#_(delete-char-at-point @current-buffer [0 1])
+
+(defn delete-char!
+  "Opposite of insert-char!"
+  ([point] (reset!
+            current-buffer
+            (delete-char-at-point @current-buffer
+                                  point))))
+
+(defn insert-char-at-point
+  [buffer point char]
   (let [point-x (first point)
         point-y (second point)
 
-        all-lines-above-current (subvec buffer 0 point-y)
-        current-line (buffer point-y)
-        current-line-without-deleted-char (delete-char-in-line current-line point-x)
-        all-lines-below-current (subvec buffer (inc point-y) (count buffer))]
+        line (buffer point-y)
+        first-half-of-line (.substring line 0 point-x)
+        second-half-of-line (.substring line point-x (.length line))
 
-    ;; Join lines above current, with the current (modified) line, with all lines below
-    (into
-     (into all-lines-above-current
-           (vector current-line-without-deleted-char))
-     all-lines-below-current)))
-
-(defn delete-char-in-current-buffer!
-  "Does what it says, and mutates the current-buffer"
-  [point]
-  (reset! current-buffer (delete-char-in-buffer @current-buffer point)))
-
-(defn delete-char-backwards
-  "Deletes a char in a buffer one column before point-x"
-  [buffer point]
-  (if (not (= (first point) 0))
-    (delete-char-in-buffer buffer [(dec (first point)) (second point)])
-    buffer))
-
-(defn delete-char-backwards!
-  "Deletes a char backwards from @point, and saves it to @current-buffer"
-  [point]
-  (reset! current-buffer (delete-char-backwards @current-buffer point)))
-
-(defn delete-char-at-current-point!
-  "Deleter whatever is in front of point. That's the point!"
-  []
-  (delete-char-in-current-buffer! [0 0])) ; FIXME FIXME FIXME
-
-(defn insert-char-in-line
-  "Returns a new line with column 'point' replaces with new alphanumeric"
-  [line column alphanumeric]
-  (assoc line column alphanumeric))
-
-(defn insert-char-in-buffer
-  "Inserts char at point in buffer.
-  If char is a \newline, it will insert a new line in the buffer after point"
-  [buffer point alphanumeric]
-  (condp = alphanumeric
-
-    \newline (let [point-x (first point)
-                   point-y (second point)
-                   current-line (buffer point-y)
-
-                   every-line-above-current-line (subvec buffer 0 point-y)     ;; collection of lines
-                   current-line-until-point (subvec current-line 0 point-x)    ;; one line
-                   rest-of-current-line (subvec current-line point-x)          ;; one line
-                   every-line-below-current-line (subvec buffer (+ 1 point-y)) ;; collection of lines
-
-                   every-line-above-plus-current-until-point (conj every-line-above-current-line current-line-until-point)
-                   above-current-plus-rest-of-current (conj every-line-above-plus-current-until-point rest-of-current-line)
-
-                   ;; Here is the last bug. I'm adding a collection into another collection.
-                   ;; What I want to do is to add every item of every-line-below-current-line into above-current-plus-rest-of-current
-                   the-whole-new-line (into above-current-plus-rest-of-current every-line-below-current-line)]
-               the-whole-new-line)
-
-    \backspace (delete-char-backwards @current-buffer point)
-
-    ;; else
-    (assoc buffer (second point) (insert-char-in-line
-                                  (buffer (second point)) ;y - line
-                                  (first point)           ;x - column
-
-                                  alphanumeric))))
+        ;; on next line something fishy is happening
+        new-line (str first-half-of-line char second-half-of-line)]
+    ;; (assoc buffer (point-y))
+    (assoc buffer point-y new-line)))
 
 (defn insert-char!
-  "Inserts a character into the current buffer at point"
-  [point alphanumeric]
-  (swap! current-buffer
-         (fn [_] (insert-char-in-buffer @current-buffer point (make-character alphanumeric)))))
+  "Inserts one-char input at point"
+  [^String input point]
+  (do (reset!
+       current-buffer
+       (insert-char-at-point @current-buffer
+                             point
+                             input))))
 
-(defn buffer?
-  "Returns true if buffer is a proper buffer, else false"
-  [buffer]
-  ;; TODO FIXME
-  (vector? buffer))
-
-(defn line->string [line]
-  (apply str                  ;; '(a b) -> "ab"
-         (map (fn [character] ;; Returns '(a b)
-                character)
-              line)))
-
-(defn buffer->string
-  "Makes a string of all lines in a buffer, separated by newlines"
-  [buffer]
-  {:pre  [buffer?]
-   :post [string?]}
-  (clojure.string/join "\n" (map line->string buffer)))
-
-(defn buffer->list-of-strings
-  "Takes a buffer, and returns a list of every line, represented as a string"
-  [buffer]
-  (into [] (map line->string buffer)))
+#_(= ["Rad is meant" "tho be hacked"]
+     (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h"))
