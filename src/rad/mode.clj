@@ -51,9 +51,10 @@
 (def key-map {\d {\w #(println "delete word")
                   \h #(println "delete backwards")
                   \l #(println "delete character")}
-              \e {\e #(println "eval expression")}
+              \e {\e (fn eval-expression [] (println "eval expression"))}
               :tab #(change-mode-to! :insert)})
 
+#_(command-mode-handle-keypress! \e)
 
 (defn command-mode-handle-keypress!
   "Builds a command in keystroke-accumulator, and if it points to a fn, eval it.

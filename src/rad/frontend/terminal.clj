@@ -52,5 +52,4 @@
 
 (comment
   (render-buffer! example-buffer scr)
-  (a/go (a/>! print-chan ["example" "buffer"]))
-  )
+  (a/go (a/>! print-chan ["example" "buffer"])))
