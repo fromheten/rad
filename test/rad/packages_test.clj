@@ -22,7 +22,7 @@
                            :rad-version "0.4.3"
 
                            :command-map '{\s (fn [] (clojure.core/println "hello"))
-                                          \r (fn [] "it works!")}})
+                                          \r (fn [] (println "it works!"))}})
                        '(ns another-example-package
                           "Another example"
                           {:command-map '{\e (fn [] "2: pretty neat")

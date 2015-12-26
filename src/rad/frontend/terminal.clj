@@ -49,8 +49,3 @@
   {:print-chan print-chan
    :in-chan in-chan
    :point-chan point-sync-chan})
-
-(comment
-  (render-buffer! example-buffer scr)
-  (a/go (a/>! print-chan ["example" "buffer"]))
-  )
