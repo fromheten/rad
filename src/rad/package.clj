@@ -22,3 +22,11 @@
   (load-file file-path)                 ;Load into the Lisp enviroment
   (load-package!                        ;Load into the Rad enviroment
    (clojure.tools.namespace.file/read-file-ns-decl file-path)))
+
+(defn clojure-files-in-dir [path]
+  (->> (file-seq (clojure.java.io/file path))
+       (map #(.getAbsolutePath %) ,)
+       (filter #(re-find #".clj$" %) ,)))
+
+(defn load-all-packages-in-dir! [path]
+  (doall (map load-package-from-file! (clojure-files-in-dir path))))

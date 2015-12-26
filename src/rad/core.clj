@@ -6,6 +6,7 @@
 (require '[rad.mode :as mode])
 (require '[rad.point :as point])
 (require '[rad.buffer :as buffer])
+(require '[rad.package :as package])
 
 (defn -main [& args]
   (println "Varmt välkommen till rad")
@@ -14,6 +15,9 @@
   (def in-c (:in-chan io-c))
   (def out-c (:print-chan io-c))
   (def point-c (:point-chan io-c))
+
+  (package/load-all-packages-in-dir! (str (System/getProperty "user.home")
+                                          "/.rad/packages"))
 
   (go
     (while true
