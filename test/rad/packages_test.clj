@@ -45,7 +45,7 @@
       (is (char? (first (keys merged-command-maps))))
       (is (= #{\e \r \s}
              (set (keys merged-command-maps))))
-      (is (= "hello"                    ;for my understanding
+      (is (= "hello"
              ((fn [] "hello"))))
       (is (= "2: pretty neat"
              ((eval (get-in merged-command-maps [\e])))
@@ -54,12 +54,12 @@
   (testing "Loading a package from a file, and running a function from it."
     (testing "Loading a package from a file"
       (reset! rad.state/loaded-packages [])
-      (load-package-from-file! "./test/packages/test-package.clj")
+      (load-package-from-file! "./test/packages/test_package.clj")
       (is (= 1
              (count @rad.state/loaded-packages))))
     (testing "Evaliating a function from its key-map"
       (reset! rad.state/loaded-packages [])
-      (load-package-from-file! "./test/packages/test-package.clj")
+      (load-package-from-file! "./test/packages/test_package.clj")
       (is (= "Running a function from a package on disk"
              ((get-in-evaled
                (merge-package-command-maps @rad.state/loaded-packages)
@@ -72,5 +72,16 @@
     (is (= (do (reset! rad.state/loaded-packages [])
                (load-all-packages-in-dir! "./test/packages/")
                (count @rad.state/loaded-packages))
-        (count (clojure-files-in-dir "./test/packages/")))))
+           (count (clojure-files-in-dir "./test/packages/")))))
+  (testing "Loading package with command that uses fn in rad.package"
+    (is (= (do (reset! rad.state/loaded-packages [])
+               (load-package!
+                '(ns package-that-uses-rad.package-ns
+                   "Let's see if my implementation is worth anything..."
+                   {:command-map '{\p (fn [] (do (require 'rad.package)
+                                                 (rad.package/get-in-evaled
+                                                  {:it "works"} [:it])))}}))
+               ((get-in-evaled
+                 (merge-package-command-maps @rad.state/loaded-packages) [\p])))
+           "works")))
   (reset! rad.state/loaded-packages []))
