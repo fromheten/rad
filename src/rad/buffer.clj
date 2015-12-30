@@ -22,7 +22,6 @@
                                       e
                                     "")))]
     (assoc buffer (second point) line-after-deletion)))
-#_(delete-char-at-point @current-buffer [0 1])
 
 (defn delete-char!
   "Opposite of insert-char!"
@@ -54,5 +53,18 @@
                              point
                              input))))
 
-#_(= ["Rad is meant" "tho be hacked"]
-     (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h"))
+(defn insert-new-line-at-line-number
+  "Returns a buffer with a blank line at position `line-nr'"
+  [buffer line-nr]
+  (if (> line-nr (count buffer))
+    (recur buffer (dec line-nr))
+    (let [lines-above-line-number (subvec buffer 0 line-nr)
+          lines-below-line-number (subvec buffer line-nr (count buffer))]
+      (into (into lines-above-line-number [""]) lines-below-line-number))))
+
+(defn insert-new-line-at-line-number!
+  "Inserts a new line into the current buffer"
+  ([line-nr] (swap! current-buffer insert-new-line-at-line-number line-nr)))
+
+(defn insert-new-line-below-point!
+  [point] (insert-new-line-at-line-number! (second point)))
