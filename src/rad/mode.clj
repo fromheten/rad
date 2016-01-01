@@ -10,11 +10,16 @@
   ([mode] (println "changing mode: " (reset! current-mode mode))))
 
 ;;; Insert mode
-(defn insert-mode-handle-keypress! [input]
+(defn insert-mode-handle-keypress!
+  "Inserts the character pressed, or changes mode"
+  [input]
   (if (keyword? input)
     (condp = input
       :backspace (rad.buffer/delete-char! @rad.point/point)
-      :tab (change-mode-to! :command))
+      :tab (change-mode-to! :command)
+      :enter (do (rad.buffer/insert-new-line-below-point! @rad.point/point)
+                 (rad.point/move-point-to-beginning-of-line!)
+                 (rad.point/move-point-down! 1)))
     (do (rad.buffer/insert-char! input @rad.point/point)
         (rad.point/move-point-forward!))))
 
@@ -53,7 +58,6 @@
                   \l #(println "delete character")}
               \e {\e #(println "eval expression")}
               :tab #(change-mode-to! :insert)})
-
 
 (defn command-mode-handle-keypress!
   "Builds a command in keystroke-accumulator, and if it points to a fn, eval it.
