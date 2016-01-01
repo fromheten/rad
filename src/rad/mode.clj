@@ -18,6 +18,7 @@
       :backspace (rad.buffer/delete-char! @rad.point/point)
       :tab (change-mode-to! :command)
       :enter (do (rad.buffer/insert-new-line-below-point! @rad.point/point)
+                 (rad.point/move-point-to-beginning-of-line!)
                  (rad.point/move-point-down! 1)))
     (do (rad.buffer/insert-char! input @rad.point/point)
         (rad.point/move-point-forward!))))

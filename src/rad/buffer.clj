@@ -67,4 +67,4 @@
   ([line-nr] (swap! current-buffer insert-new-line-at-line-number line-nr)))
 
 (defn insert-new-line-below-point!
-  [point] (insert-new-line-at-line-number! (second point)))
+  [point] (insert-new-line-at-line-number! (inc (second point))))
