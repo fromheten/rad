@@ -54,12 +54,12 @@
   (testing "Loading a package from a file, and running a function from it."
     (testing "Loading a package from a file"
       (reset! rad.state/loaded-packages [])
-      (load-package-from-file! "./test/packages/test_package.clj")
+      (load-package-from-file! "./test_packages/test_package.clj")
       (is (= 1
              (count @rad.state/loaded-packages))))
     (testing "Evaliating a function from its key-map"
       (reset! rad.state/loaded-packages [])
-      (load-package-from-file! "./test/packages/test_package.clj")
+      (load-package-from-file! "./test_packages/test_package.clj")
       (is (= "Running a function from a package on disk"
              ((get-in-evaled
                (merge-package-command-maps @rad.state/loaded-packages)
@@ -70,9 +70,9 @@
                [\g]))))))
   (testing "Loading all packages in a directory"
     (is (= (do (reset! rad.state/loaded-packages [])
-               (load-all-packages-in-dir! "./test/packages/")
+               (load-all-packages-in-dir! "./test_packages/")
                (count @rad.state/loaded-packages))
-           (count (clojure-files-in-dir "./test/packages/")))))
+           (count (clojure-files-in-dir "./test_packages/")))))
   (testing "Loading package with command that uses fn in rad.package"
     (is (= (do (reset! rad.state/loaded-packages [])
                (load-package!
