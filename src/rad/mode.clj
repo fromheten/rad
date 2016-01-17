@@ -1,6 +1,8 @@
 (ns rad.mode
   (:require [rad.buffer]
             [rad.point]
+            [rad.package]
+            [rad.state]
             [clojure.core.async :as a :refer [go go-loop chan timeout <! >!]]))
 
 (def current-mode (atom :insert))
@@ -53,11 +55,11 @@
 ;; end timeout code
 
 (def keystroke-accumulator (atom []))
-(def key-map {\d {\w #(println "delete word")
-                  \h #(println "delete backwards")
-                  \l #(println "delete character")}
-              \e {\e #(println "eval expression")}
-              :tab #(change-mode-to! :insert)})
+
+(defn global-command-mode-key-map []
+  (into {} [{\e {\e #(println "eval expression")}
+             :tab #(change-mode-to! :insert)}
+            (rad.package/merge-package-command-maps @rad.state/loaded-packages)]))
 
 (defn command-mode-handle-keypress!
   "Builds a command in keystroke-accumulator, and if it points to a fn, eval it.
@@ -65,7 +67,7 @@
   query (keystroke-accumulator) in the same format. Homoiconicity is the shit."
   [input-char]
   (let [key-map-node-or-leaf (swap! keystroke-accumulator conj input-char)
-        fn-or-map (get-in key-map @keystroke-accumulator)]
+        fn-or-map (eval (get-in (global-command-mode-key-map) @keystroke-accumulator))]
     ;; go block for controlling mode timeout
     (go (touch-timestamp! last-keypress-timestamp)
         (>! command-mode-keypresses-chan input-char))
