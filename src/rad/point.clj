@@ -34,6 +34,10 @@
       [0 point-y]
       [new-point-x point-y])))
 
+(defn move-point-backwards!
+  ([] (move-point-backwards! 1))
+  ([steps] (swap! point move-point-backwards steps)))
+
 (defn move-point-down
   "Returns a point where the y position is decremented `steps' steps"
   [point steps]
