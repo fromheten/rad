@@ -2,6 +2,7 @@
   (:require [clojure.test :refer :all]
             [rad.package :refer :all]
             [rad.state]))
+
 (def example-packages ['(ns new-kind-of-package
                           "A prototype for how a package can look"
 

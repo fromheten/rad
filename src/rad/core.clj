@@ -18,8 +18,8 @@
   (def out-c (:print-chan io-c))
   (def point-c (:point-chan io-c))
 
-  (package/load-all-packages-in-dir! (str (System/getProperty "user.home")
-                                          "/.rad/packages"))
+  (go (package/load-all-packages-in-dir! (str (System/getProperty "user.home")
+                                           "/.rad/packages")))
 
   (go
     (while true

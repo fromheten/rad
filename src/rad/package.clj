@@ -29,4 +29,4 @@
        (filter #(re-find #".clj$" %) ,)))
 
 (defn load-all-packages-in-dir! [path]
-  (doall (map load-package-from-file! (clojure-files-in-dir path))))
+  (run! load-package-from-file! (clojure-files-in-dir path)))
