@@ -26,6 +26,10 @@
                                              keyword)
     :else key-press-map))
 
+(defn buffer->widgets
+  "Convert a buffer into JavaFX objects"
+  [buffer]
+  (fx/compile-fx (fx-hiccup buffer)))
 
 (defn app-window! [refresh-fn & config-map]
   (fx/run<!!
@@ -39,7 +43,6 @@
                     (a/put! input-chan
                             (fx-keydown->rad-char
                              {:text (.getText event)
-                              :to-string (.toString event)
                               :character (.getCharacter event)
                               :code (.toString (.getCode event))
                               :alt-down? (.isAltDown event)
@@ -50,13 +53,20 @@
      (.setScene stage scene)
      (.initModality stage Modality/NONE)
      (fx/pset! stage {:title "rad"})
+     (.setHeight stage 300)
+     (.setWidth stage 533)
+
      (.show stage)
+
+     ;; Render any buffers coming into print-chan
+     (a/go-loop []
+       (fx/pset! scene {:root (buffer->widgets (a/<! print-chan))})
+       (recur))
+
      stage)))
 
-(defn app-widgets [] (fx/compile-fx (fx-hiccup ["Rad is meant" "to be hacked"])))
-
 (defn init-fx! []
-  (app-window! app-widgets)
+  (app-window! #(buffer->widgets ["Rad is meant" "to be hacked"]))
   {:print-chan print-chan
    :in-chan input-chan
    :point-chan (chan)})
