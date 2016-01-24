@@ -7,6 +7,7 @@
 (require '[rad.point :as point])
 (require '[rad.buffer :as buffer])
 (require '[rad.package :as package])
+(require '[rad.state])
 
 (defn -main [& args]
   (println "Varmt välkommen till rad")
@@ -27,4 +28,9 @@
     (recur))
   (go-loop []
     (rad.mode/handle-keypress! (<! in-c))
-    (recur)))
+    (recur))
+
+  (loop []
+    (if-not (:should-exit? @rad.state/config)
+      (recur)
+      (println "Exiting Rad..."))))

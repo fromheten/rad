@@ -1,6 +1,7 @@
 (ns rad.frontend.fx
   (:require [fx-clj.core :as fx]
-            [clojure.core.async :as a :refer [<! >! go-loop chan]])
+            [clojure.core.async :as a :refer [<! >! go-loop chan]]
+            [rad.state])
   (:import (javafx.scene.input KeyCode)
            (javafx.stage Modality)))
 
@@ -50,6 +51,11 @@
                               :meta-down? (.isMetaDown event)
                               :shift-down? (.isShiftDown event)
                               :shortcut-down? (.isShortcutDown event)}))))})
+
+     (fx/pset! stage
+               {:on-close-request
+                (fn [_] (swap! rad.state/config update :should-exit? not))})
+
      (.setScene stage scene)
      (.initModality stage Modality/NONE)
      (fx/pset! stage {:title "rad"})

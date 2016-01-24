@@ -1,4 +1,6 @@
 (ns rad.state
-  "Contains shared mutable state for rad. Call it `app-db'")
+  "Contains shared state for rad.")
 
 (def loaded-packages (atom []))
+
+(def config (atom {:should-exit? false}))
