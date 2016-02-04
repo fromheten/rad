@@ -4,13 +4,53 @@
   (:import (javafx.scene.input KeyCode)))
 
 (deftest rendering-buffers
-  (testing "converting a rad buffer to fx hiccup"
-    (is (= (fx-hiccup ["Rad is meant" "to be hacked!"])
-           [:text-flow
-            [:text "Rad is meant"]
-            [:text "\n"]
-            [:text "to be hacked!"]
-            [:text "\n"]]))))
+  ;; In the future, add tests for multiple points.
+  (testing "rendering a single char"
+    (is (= (hiccup-char "r")
+           [:text-flow [:text "r"]]))
+    (is (= (hiccup-char "a" true)
+           [:text-flow.point [:text.point "a"]])))
+  (testing "rendering a single line with point"
+    (is (= (hiccup-line "rad" 1)
+           [:flow-pane
+            [:text-flow [:text "r"]]
+            [:text-flow.point [:text.point "a"]]
+            [:text-flow [:text "d"]]])))
+  (testing "convert a rad buffer to hiccup with background"
+    (is (= (fx-hiccup ["Rad" "hack"] [1 1])
+           [:v-box
+            [:flow-pane
+             [:text-flow [:text "R"]]
+             [:text-flow [:text "a"]]
+             [:text-flow [:text "d"]]]
+            [:flow-pane
+             [:text-flow [:text "h"]]
+             [:text-flow.point [:text.point "a"]]
+             [:text-flow [:text "c"]]
+             [:text-flow [:text "k"]]]])))
+  (testing "rendering empty lines"
+    (is (= (hiccup-char "")
+           [:text-flow [:text ""]]))
+    (is (= (hiccup-line "")
+           [:flow-pane [:text-flow [:text " "]]]))
+    (is (= (fx-hiccup ["Rad " "" "" "rocks!"]) ;; Just like CIDER!
+           [:v-box
+            [:flow-pane
+             [:text-flow [:text "R"]]
+             [:text-flow [:text "a"]]
+             [:text-flow [:text "d"]]
+             [:text-flow [:text " "]]]
+            [:flow-pane
+             [:text-flow [:text " "]]]
+            [:flow-pane
+             [:text-flow [:text " "]]]
+            [:flow-pane
+             [:text-flow [:text "r"]]
+             [:text-flow [:text "o"]]
+             [:text-flow [:text "c"]]
+             [:text-flow [:text "k"]]
+             [:text-flow [:text "s"]]
+             [:text-flow [:text "!"]]]]))))
 
 (deftest input
   (testing "converting JavaFX input object into a rad char"

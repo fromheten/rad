@@ -1,19 +1,50 @@
 (ns rad.frontend.fx
   (:require [fx-clj.core :as fx]
-            [clojure.core.async :as a :refer [<! >! go-loop chan]]
-            [rad.state])
+            [clojure.core.async :as a :refer [chan go go-loop alts! >! <!]]
+            [rad.state]
+            [rad.util :as u])
   (:import (javafx.scene.input KeyCode)
            (javafx.stage Modality)))
 
 (def print-chan (chan))
 (def input-chan (chan 1000))
+(def point-chan (chan 1000))
+
+(defn hiccup-char
+  [^String character & point?]
+  (if (first point?)
+    [:text-flow.point [:text.point character]]
+    [:text-flow [:text character]]))
+
+(defn hiccup-line
+  "Makes rad-friendly fx hiccup syntax from a string.
+  Adding the .point class where appropriate"
+  [^String line & point-x]
+  (if (zero? (count line))
+    [:flow-pane (hiccup-char " ")]
+    (loop [hiccup [:flow-pane]
+           chars-left (count line)
+           index 0]
+      (if (zero? chars-left)
+        hiccup
+        (recur (into hiccup [(hiccup-char
+                              (str (.charAt line index))
+                              (= index (first point-x)))])
+               (dec chars-left)
+               (inc index))))))
 
 (defn fx-hiccup
   "Converts a Rad buffer into fx hiccup syntax"
-  [buffer]
-  (into [:text-flow] (mapcat (fn [line]
-                               [[:text line] [:text "\n"]])
-                             buffer)))
+  [buffer & point]
+  ;; Render with point
+  (let [point (first point)] ; not yet ready for multiple points
+    (->> buffer
+         (map-indexed (fn [line-number line]
+                        (if (= line-number (second point))
+                          [(hiccup-line line (first point))]
+                          [(hiccup-line line)])))
+         (apply concat ,)
+         (into [:v-box] ,))))
 
 (defn fx-keydown->rad-char
   "Takes a map that looks like a JavaFX KeyPress object.
@@ -21,6 +52,7 @@
   [key-press-map]
   (cond
     (= "\t" (:text key-press-map)) :tab
+    (= "ENTER" (:code key-press-map)) :enter
     (not (empty? (:text key-press-map))) (.charAt (:text key-press-map) 0)
     (not (empty? (:code key-press-map))) (-> (:code key-press-map)
                                              clojure.string/lower-case
@@ -29,32 +61,32 @@
 
 (defn buffer->widgets
   "Convert a buffer into JavaFX objects"
-  [buffer]
-  (fx/compile-fx (fx-hiccup buffer)))
+  [buffer point]
+  (fx/compile-fx (fx-hiccup buffer point)))
 
-(defn app-window! [refresh-fn & config-map]
+(defn app-window! [refresh-fn]
   (fx/run<!!
    (let [scene (fx/scene (refresh-fn))
          stage (fx/stage)]
      (fx/pset! scene
                {:on-key-pressed
                 (fn [event]
-                  (if (= KeyCode/F5 (.getCode event))
-                    (fx/pset! scene {:root (refresh-fn)})
-                    (a/put! input-chan
-                            (fx-keydown->rad-char
-                             {:text (.getText event)
-                              :character (.getCharacter event)
-                              :code (.toString (.getCode event))
-                              :alt-down? (.isAltDown event)
-                              :control-down? (.isControlDown event)
-                              :meta-down? (.isMetaDown event)
-                              :shift-down? (.isShiftDown event)
-                              :shortcut-down? (.isShortcutDown event)}))))})
-
+                  (a/put! input-chan
+                          (fx-keydown->rad-char
+                           {:text (.getText event)
+                            :character (.getCharacter event)
+                            :code (.toString (.getCode event))
+                            :alt-down? (.isAltDown event)
+                            :control-down? (.isControlDown event)
+                            :meta-down? (.isMetaDown event)
+                            :shift-down? (.isShiftDown event)
+                            :shortcut-down? (.isShortcutDown event)})))})
      (fx/pset! stage
                {:on-close-request
                 (fn [_] (swap! rad.state/config update :should-exit? not))})
+
+
+     (fx/set-global-css! ".point {-fx-background-color: limegreen;}")
 
      (.setScene stage scene)
      (.initModality stage Modality/NONE)
@@ -65,14 +97,21 @@
      (.show stage)
 
      ;; Render any buffers coming into print-chan
-     (a/go-loop []
-       (fx/pset! scene {:root (buffer->widgets (a/<! print-chan))})
-       (recur))
+     (let [render! (fn [scene buffer point]
+                     (fx/pset! scene {:root (buffer->widgets buffer point)}))]
+
+       (a/go-loop [last-buf nil
+                   last-point nil]
+         (render! scene last-buf last-point)
+         (let [[v ch] (a/alts! [print-chan point-chan])]
+           (if (= ch point-chan)
+             (recur (u/prpass last-buf) (u/prpass v))
+             (recur v last-point)))))
 
      stage)))
 
 (defn init-fx! []
-  (app-window! #(buffer->widgets ["Rad is meant" "to be hacked"]))
+  (app-window! #(buffer->widgets ["Rad is meant" "to be hacked"] [0 1]))
   {:print-chan print-chan
    :in-chan input-chan
-   :point-chan (chan)})
+   :point-chan point-chan})

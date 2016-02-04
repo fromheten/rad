@@ -1,7 +1,7 @@
 (ns rad.buffer
   (:require [clojure.core.async :as a :refer [chan go >!]]))
 
-(def current-buffer (atom ["Rad is meant"
+(def current-buffer (atom ["     Rad is meant"
                            "to be hacked"]))
 (def buffer-updates-channel
   (let [channel (chan)]
