@@ -20,13 +20,18 @@
   "Makes rad-friendly fx hiccup syntax from a string.
   Adding the .point class where appropriate"
   [^String line & point-x]
-  (if (zero? (count line))
-    [:flow-pane (hiccup-char " ")]
+  (if (zero? (count line))              ; empty line
+    (if point-x
+      [:flow-pane (hiccup-char " " true)]
+      [:flow-pane (hiccup-char " ")])
+
     (loop [hiccup [:flow-pane]
            chars-left (count line)
            index 0]
       (if (zero? chars-left)
-        hiccup
+        (if (= (first point-x) index)
+          (conj hiccup (hiccup-char " " true))
+          hiccup)
         (recur (into hiccup [(hiccup-char
                               (str (.charAt line index))
                               (= index (first point-x)))])

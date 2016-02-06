@@ -27,13 +27,20 @@
              [:text-flow [:text "h"]]
              [:text-flow.point [:text.point "a"]]
              [:text-flow [:text "c"]]
-             [:text-flow [:text "k"]]]])))
+             [:text-flow [:text "k"]]]]))
+    (testing "showing point even when it is outside of the text"
+      (is (= (fx-hiccup ["rad"] [3 0])
+             [:v-box [:flow-pane
+                      [:text-flow [:text "r"]]
+                      [:text-flow [:text "a"]]
+                      [:text-flow [:text "d"]]
+                      [:text-flow.point [:text.point " "]]]]))))
   (testing "rendering empty lines"
     (is (= (hiccup-char "")
            [:text-flow [:text ""]]))
     (is (= (hiccup-line "")
            [:flow-pane [:text-flow [:text " "]]]))
-    (is (= (fx-hiccup ["Rad " "" "" "rocks!"]) ;; Just like CIDER!
+    (is (= (fx-hiccup ["Rad " "" "" "rocks!"] [0 1]) ;; Just like CIDER!
            [:v-box
             [:flow-pane
              [:text-flow [:text "R"]]
@@ -41,7 +48,7 @@
              [:text-flow [:text "d"]]
              [:text-flow [:text " "]]]
             [:flow-pane
-             [:text-flow [:text " "]]]
+             [:text-flow.point [:text.point " "]]]
             [:flow-pane
              [:text-flow [:text " "]]]
             [:flow-pane
