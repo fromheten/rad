@@ -90,8 +90,8 @@
                {:on-close-request
                 (fn [_] (swap! rad.state/config update :should-exit? not))})
 
-
-     (fx/set-global-css! ".point {-fx-background-color: limegreen;}")
+     (fx/set-global-css! [[:* {:-fx-font-family "monaco, Consolas, 'Lucida Console', monospace"}]
+                          [:.point {:-fx-background-color "limegreen"}]])
 
      (.setScene stage scene)
      (.initModality stage Modality/NONE)
@@ -103,16 +103,17 @@
 
      ;; Render any buffers coming into print-chan
      (let [render! (fn [scene buffer point]
-                     (fx/pset! scene {:root (buffer->widgets buffer point)}))]
+                     (fx/pset! scene {:root (buffer->widgets buffer point)}))
+           welcome-message ["Rad is meant"
+                            "to be hacked"]]
 
-       (a/go-loop [last-buf nil
-                   last-point nil]
+       (a/go-loop [last-buf welcome-message
+                   last-point [0 0]]
          (render! scene last-buf last-point)
          (let [[v ch] (a/alts! [print-chan point-chan])]
            (if (= ch point-chan)
-             (recur (u/prpass last-buf) (u/prpass v))
+             (recur last-buf v)
              (recur v last-point)))))
-
      stage)))
 
 (defn init-fx! []
