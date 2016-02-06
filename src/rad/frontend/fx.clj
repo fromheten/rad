@@ -3,8 +3,7 @@
             [clojure.core.async :as a :refer [chan go go-loop alts! >! <!]]
             [rad.state]
             [rad.util :as u])
-  (:import (javafx.scene.input KeyCode)
-           (javafx.stage Modality)))
+  (:import (javafx.stage Modality)))
 
 (def print-chan (chan))
 (def input-chan (chan 1000))
@@ -41,7 +40,6 @@
 (defn fx-hiccup
   "Converts a Rad buffer into fx hiccup syntax"
   [buffer & point]
-  ;; Render with point
   (let [point (first point)] ; not yet ready for multiple points
     (->> buffer
          (map-indexed (fn [line-number line]

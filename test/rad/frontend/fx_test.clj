@@ -1,7 +1,6 @@
 (ns rad.frontend.fx-test
   (:require [rad.frontend.fx :refer :all]
-            [clojure.test :refer :all])
-  (:import (javafx.scene.input KeyCode)))
+            [clojure.test :refer :all]))
 
 (deftest rendering-buffers
   ;; In the future, add tests for multiple points.
