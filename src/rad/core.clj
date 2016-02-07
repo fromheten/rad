@@ -1,13 +1,18 @@
 (ns rad.core
-  (:gen-class))
+  (:gen-class)
+  (:require [clojure.core.async :as a :refer [go go-loop chan >! <!]]
+            [rad.frontend.fx :as fx]
+            [rad.mode :as mode]
+            [rad.point :as point]
+            [rad.buffer :as buffer]
+            [rad.package :as package]
+            [rad.state]))
 
-(require '[clojure.core.async :as a :refer [go go-loop chan >! <!]])
-(require '[rad.frontend.fx :as fx])
-(require '[rad.mode :as mode])
-(require '[rad.point :as point])
-(require '[rad.buffer :as buffer])
-(require '[rad.package :as package])
-(require '[rad.state])
+(Thread/setDefaultUncaughtExceptionHandler
+ (reify Thread$UncaughtExceptionHandler
+   (uncaughtException [_ thread throwable]
+     (println (.getMessage throwable))
+     (System/exit 1))))
 
 (defn -main [& args]
   (println "Varmt välkommen till rad")
