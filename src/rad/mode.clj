@@ -17,12 +17,13 @@
   [input]
   (if (keyword? input)
     (condp = input
-      :backspace (do (rad.point/move-point-backwards! 1)
+      :back_space (do (rad.point/move-point-backwards! 1)
                      (rad.buffer/delete-char! @rad.point/point))
       :tab (change-mode-to! :command)
       :enter (do (rad.buffer/insert-new-line-below-point! @rad.point/point)
                  (rad.point/move-point-to-beginning-of-line!)
-                 (rad.point/move-point-down! 1)))
+                 (rad.point/move-point-down! 1))
+      (println (str "Can not handle input: " input)))
     (do (rad.buffer/insert-char! input @rad.point/point)
         (rad.point/move-point-forward!))))
 

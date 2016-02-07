@@ -6,6 +6,7 @@
                  [clojure-lanterna "0.9.4"]
                  [org.clojure/tools.namespace "0.2.11"]
                  [org.clojure/core.async "0.2.374"]
+                 [fx-clj "0.2.0-alpha1"]
                  [adzerk/boot-test "1.0.5" :scope "test"]])
 (require '[adzerk.boot-test :refer :all])
 
