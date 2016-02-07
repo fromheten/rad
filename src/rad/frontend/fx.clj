@@ -67,9 +67,9 @@
   [buffer point]
   (fx/compile-fx (fx-hiccup buffer point)))
 
-(defn app-window! [refresh-fn]
+(defn app-window! []
   (fx/run<!!
-   (let [scene (fx/scene (refresh-fn))
+   (let [scene (fx/scene (buffer->widgets [""] [0 0]))
          stage (fx/stage)]
      (fx/pset! scene
                {:on-key-pressed
@@ -115,7 +115,7 @@
      stage)))
 
 (defn init-fx! []
-  (app-window! #(buffer->widgets ["Rad is meant" "to be hacked"] [0 1]))
+  (app-window!)
   {:print-chan print-chan
    :in-chan input-chan
    :point-chan point-chan})
