@@ -5,8 +5,8 @@
                            "to be hacked"]))
 (def buffer-updates-channel
   (let [channel (chan)]
-    (add-watch current-buffer :some-key
-               (fn [key atom old-state new-state]
+    (add-watch current-buffer :_
+               (fn [_ _ _ new-state]
                  (go (>! channel new-state))))
     channel))
 
@@ -30,19 +30,29 @@
             (delete-char-at-point @current-buffer
                                   point))))
 
+(defn insert-char-in-line
+  "Returns a string with `char' inserted at `point-y'"
+  [^String line char point-x]
+  (cond
+    (neg? point-x) (recur line char 0)
+    (> point-x (count line)) (recur line char (count line))
+    :else  (let [first-half-of-line (.substring line 0 point-x)
+                 second-half-of-line (.substring line point-x (.length line))]
+             (str first-half-of-line char second-half-of-line))))
+
 (defn insert-char-at-point
-  [buffer point char]
+  "returns a buffer with `char' at `point'"
+  [buffer point ^String character]
   (let [point-x (first point)
-        point-y (second point)
-
-        line (buffer point-y)
-        first-half-of-line (.substring line 0 point-x)
-        second-half-of-line (.substring line point-x (.length line))
-
-        ;; on next line something fishy is happening
-        new-line (str first-half-of-line char second-half-of-line)]
-    ;; (assoc buffer (point-y))
-    (assoc buffer point-y new-line)))
+        point-y (second point)]
+    (cond
+      (> point-y (count buffer)) (conj buffer character)
+      :else (assoc buffer
+                   point-y
+                   (insert-char-in-line
+                    (buffer point-y)
+                    character
+                    point-x)))))
 
 (defn insert-char!
   "Inserts one-char input at point"

@@ -19,13 +19,12 @@
 
   (testing "Moving point up"
     (is (= [0 1]
-           (move-point-up [0 3] 2 test-buffer))))
+           (move-point-up [0 3] 2 test-buffer)))
+    (is (= [5 0]
+           (move-point-up [5 100] 500 test-buffer))))
 
   (testing "Moving point to the beginning of a line"
     (is (= [0 0]
            (move-point-to-beginning-of-line [100 0])))
     (is (= [0 500]
-           (move-point-to-beginning-of-line [500 500]))))
-  (testing "whether something is a negative number"
-    (is (negative? -5))
-    (is (not (negative? 6)))))
+           (move-point-to-beginning-of-line [500 500])))))

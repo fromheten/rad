@@ -31,21 +31,32 @@
   ([] (move-point-forward! 1))
   ([steps] (swap! point move-point-forward steps @rad.buffer/current-buffer)))
 
-(defn negative? [n] (< n 0))
-
 (defn move-point-backwards
   "Returns a point where the x position is decremented `steps' steps"
   [point steps]
   (let [point-x (first point)
         new-point-x (- point-x steps)
         point-y (second point)]
-    (if (negative? new-point-x)
+    (if (neg? new-point-x)
       [0 point-y]
       [new-point-x point-y])))
 
 (defn move-point-backwards!
   ([] (move-point-backwards! 1))
   ([steps] (swap! point move-point-backwards steps)))
+
+(defn move-point-up
+  "Returns a point where the y position is decremented `steps' steps"
+  [point steps buffer]
+  (let [new-point-y (- (second point) steps)]
+    (if (neg? new-point-y)
+      [(first point) 0]
+      [(first point) new-point-y])))
+
+(defn move-point-up!
+  "Moves point `steps' steps up. Defaults to 1 step."
+  ([] (move-point-up! 1))
+  ([steps] (swap! point move-point-up steps @rad.buffer/current-buffer)))
 
 (defn move-point-down
   "Returns a point where the y position is decremented `steps' steps"
