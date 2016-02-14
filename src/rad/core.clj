@@ -1,6 +1,7 @@
 (ns rad.core
   (:gen-class)
   (:require [clojure.core.async :as a :refer [go go-loop chan >! <!]]
+            [clojure.stacktrace]
             [rad.frontend.fx :as fx]
             [rad.mode :as mode]
             [rad.point :as point]
@@ -11,7 +12,9 @@
 (Thread/setDefaultUncaughtExceptionHandler
  (reify Thread$UncaughtExceptionHandler
    (uncaughtException [_ thread throwable]
-     (println (.getMessage throwable))
+     (println "\n\nOh no!\n\n")
+     (let [stack-trace (.getStackTrace throwable)]
+       (clojure.stacktrace/print-stack-trace stack-trace))
      (System/exit 1))))
 
 (defn -main [& args]
@@ -22,7 +25,7 @@
   (def out-c (:print-chan io-c))
   (def point-c (:point-chan io-c))
 
-  (go (package/load-all-packages-in-dir! "src/standard-packages")
+  (go (package/load-all-packages-in-dir! "standard-packages")
       (package/load-all-packages-in-dir! (str (System/getProperty "user.home")
                                            "/.rad/packages")))
 

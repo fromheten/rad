@@ -8,14 +8,20 @@
   (testing "Moving point in forward"
     (is (= [3 0]
            (move-point-forward [0 0] 5 test-buffer))))
+
   (testing "Moving point backwards"
     (is (= [4 0]
            (move-point-backwards [5 0] 1)))
     (is (= [0 2]
            (move-point-backwards [4 2] 58))))
+
   (testing "Moving point down"
     (is (= [0 1]
-           (move-point-down [0 0] 1))))
+           (move-point-down [0 0] 1 ["yo" "dawg"])))
+    (is (= [0 1]
+           (move-point-down [0 0] 222 ["yo" "dawg"])))
+    (is (= [0 1]
+           (move-point-down [0 1] 1 ["what" "up"]))))
 
   (testing "Moving point up"
     (is (= [0 1]

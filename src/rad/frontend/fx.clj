@@ -1,8 +1,7 @@
 (ns rad.frontend.fx
   (:require [fx-clj.core :as fx]
             [clojure.core.async :as a :refer [chan go go-loop alts! >! <!]]
-            [rad.state]
-            [rad.util :as u])
+            [rad.state])
   (:import (javafx.stage Modality)))
 
 (def print-chan (chan))
@@ -28,7 +27,10 @@
            chars-left (count line)
            index 0]
       (if (zero? chars-left)
-        (if (= (first point-x) index)
+        (if (and (not (nil? point-x))
+                 (or
+                  (= (first point-x) index)
+                  (> (first point-x) (count line))))
           (conj hiccup (hiccup-char " " true))
           hiccup)
         (recur (into hiccup [(hiccup-char

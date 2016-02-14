@@ -37,9 +37,9 @@
   (let [point-x (first point)
         new-point-x (- point-x steps)
         point-y (second point)]
-    (if (neg? new-point-x)
-      [0 point-y]
-      [new-point-x point-y])))
+    (cond
+      (neg? new-point-x) [0 point-y]
+      :else [new-point-x point-y])))
 
 (defn move-point-backwards!
   ([] (move-point-backwards! 1))
@@ -60,13 +60,16 @@
 
 (defn move-point-down
   "Returns a point where the y position is decremented `steps' steps"
-  [point steps]
-  (let [point-y (second point)]
-    [(first point) (+ point-y steps)]))
+  [point steps buffer]
+  (let [point-y (second point)
+        target-line (+ point-y steps)]
+    (cond
+      (>= target-line (count buffer)) [(first point) (dec (count buffer))]
+      :else [(first point) target-line])))
 
 (defn move-point-down!
   ([] (move-point-down! 1))
-  ([steps] (swap! point move-point-down steps)))
+  ([steps] (swap! point move-point-down steps @rad.buffer/current-buffer)))
 
 (defn move-point-to-beginning-of-line
   [point]
