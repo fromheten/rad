@@ -23,6 +23,11 @@
       :enter (do (rad.buffer/insert-new-line-below-point! @rad.point/point)
                  (rad.point/move-point-to-beginning-of-line!)
                  (rad.point/move-point-down! 1))
+      :up (rad.point/move-point-up!)
+      :down (rad.point/move-point-down!)
+      :left (rad.point/move-point-backwards!)
+      :right (rad.point/move-point-forward!)
+
       (println (str "Can not handle input: " input)))
     (do (rad.buffer/insert-char! input @rad.point/point)
         (rad.point/move-point-forward!))))
