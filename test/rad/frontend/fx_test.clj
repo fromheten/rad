@@ -9,12 +9,23 @@
            [:text-flow [:text "r"]]))
     (is (= (hiccup-char "a" true)
            [:text-flow.point [:text.point "a"]])))
+
   (testing "rendering a single line with point"
     (is (= (hiccup-line "rad" 1)
            [:flow-pane
             [:text-flow [:text "r"]]
             [:text-flow.point [:text.point "a"]]
             [:text-flow [:text "d"]]])))
+
+
+  (testing "when point is after the line ends, show it in the line end"
+    (is (= (hiccup-line "rad" 5555)
+           [:flow-pane
+            [:text-flow [:text "r"]]
+            [:text-flow [:text "a"]]
+            [:text-flow [:text "d"]]
+            [:text-flow.point [:text.point " "]]])))
+
   (testing "convert a rad buffer to hiccup with background"
     (is (= (fx-hiccup ["Rad" "hack"] [1 1])
            [:v-box
@@ -27,6 +38,7 @@
              [:text-flow.point [:text.point "a"]]
              [:text-flow [:text "c"]]
              [:text-flow [:text "k"]]]]))
+
     (testing "showing point even when it is outside of the text"
       (is (= (fx-hiccup ["rad"] [3 0])
              [:v-box [:flow-pane
@@ -34,6 +46,7 @@
                       [:text-flow [:text "a"]]
                       [:text-flow [:text "d"]]
                       [:text-flow.point [:text.point " "]]]]))))
+
   (testing "rendering empty lines"
     (is (= (hiccup-char "")
            [:text-flow [:text ""]]))
