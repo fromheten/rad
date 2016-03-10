@@ -1,6 +1,7 @@
 (ns rad.state
-  "Contains shared state for rad.")
+  "Contains shared state for rad."
+  (:require [clojure.core.async :refer [chan]]))
 
 (def loaded-packages (atom []))
 
-(def config (atom {:should-exit? false}))
+(def shutdown-chan (chan))
