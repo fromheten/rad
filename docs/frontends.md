@@ -60,13 +60,9 @@ When that happens, the new buffer or point will be put onto the `:print-chan` & 
 
 ## How to shut down rad from a front-end?
 
-When you want to shut down rad, you set `(:should-exit @rad.state/config)` to true.
+To tell Rad to shut off, do `(clojure.core.async/put! rad.state/shutdown-chan :exit)`.
 
 When Rad is done with whatever it is doing, it will shut down. That behaviour is defined in `rad.core/-main`.
-
-``` clojure
-(swap! rad.state/config update :should-exit? not)
-```
 
 ## Roadmap
 

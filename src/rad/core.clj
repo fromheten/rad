@@ -39,7 +39,5 @@
     (rad.mode/handle-keypress! (<! in-c))
     (recur))
 
-  (loop []
-    (if-not (:should-exit? @rad.state/config)
-      (recur)
-      (println "Exiting Rad..."))))
+  (a/<!! rad.state/shutdown-chan) ; this is how rad is told to exit
+  (println "Exiting Rad..."))

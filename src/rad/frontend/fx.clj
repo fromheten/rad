@@ -88,7 +88,7 @@
                             :shortcut-down? (.isShortcutDown event)})))})
      (fx/pset! stage
                {:on-close-request
-                (fn [_] (swap! rad.state/config update :should-exit? not))})
+                (fn [_] (a/put! rad.state/shutdown-chan :exit))})
 
      (fx/set-global-css! [[:* {:-fx-font-family "monaco, Consolas, 'Lucida Console', monospace"}]
                           [:.point {:-fx-background-color "limegreen"}]])
