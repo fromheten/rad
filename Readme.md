@@ -63,7 +63,48 @@ Rad (currently) has 2 modes. They are defined in `rad.mode`.
 *Command mode* is kind of like `vim`. I'll document this better later...
 
 ### Packages
-**NOT IMPLEMENTED YET**. Rad packages are inspired by Atom and Emacs, but I'm not yet sure how they will work.
+Rad packages are crazy simple. They have exactly the same form as a Clojure `ns` macro.
+Only difference is: a rad package requires a `docstring` and an `attr-map`.
+
+All packages in `~/.rad/packages` will be loaded upon startup.
+
+All standard packages that are distributed along with Rad are located in `../standard-packages/`.
+
+To load a package from file, use `rad.package/load-package-from-file!`.
+
+To load a package from a Clojure list (beginning with the symbol `ns`), use `rad.package/load-package!`.
+
+#### Example package - test-package
+This is the package I used for testing. It's very small but shows off what capabilities lie in Rad packages.
+
+``` clojure
+(ns replace-buffer-with-happy-message
+  "Replaces the current buffers content with an uplifting message.
+  Just for fun."
+  {:author {:name "Martin Josefsson"
+            :url "http://www.martinjosefsson.com"
+            :email "hello@martinjosefsson.com"}
+   :command-map '{\!
+                  {\h
+                   {\a
+                    {\p
+                     {\p
+                      {\y
+                       (fn [] (reset! rad.buffer/current-buffer
+                                      (replace-buffer-with-happy-message/message!)))}}}}}}})
+
+(println "Happy Hacking :)")
+(defn message! []
+  (let [msg "Happy Hacking :)"]
+    (println (str "Happy Hacking :)" msg))
+    [msg]))
+```
+
+When `replace-buffer-with-happy-message` is loaded (with `rad.package/load-package-from-file!`), it will print "Happy Hacking :)" to STDOUT.
+
+It also adds the command-mode command `happy`, which uses vars defined in `rad.buffer` as well as in the package.
+
+Add the replace-buffer-with-happy-message package to `~/.rad/packages`, restart Rad, enter command mode and type `happy` and you will see it in action.
 
 ## Why?
 ### A hackable enviroment
