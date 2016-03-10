@@ -17,8 +17,8 @@
   [input]
   (if (keyword? input)
     (condp = input
-      :back_space (do (rad.point/move-point-backwards! 1)
-                     (rad.buffer/delete-char! @rad.point/point))
+      :back_space (do (rad.buffer/delete-char-backwards! @rad.point/point)
+                      (rad.point/move-point-backwards! 1))
       :tab (change-mode-to! :command)
       :enter (do (rad.buffer/insert-new-line-below-point! @rad.point/point)
                  (rad.point/move-point-to-beginning-of-line!)

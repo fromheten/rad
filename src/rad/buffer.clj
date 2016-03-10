@@ -10,18 +10,23 @@
                  (go (>! channel new-state))))
     channel))
 
+(defn delete-char-in-line
+  "Returns line without the char at point"
+  [line point-x]
+  (try
+    (str (subs line 0 point-x) (subs line (inc point-x)))
+    (catch Exception e
+      (delete-char-in-line line (dec (count line))))))
+
 (defn delete-char-at-point
   "Returns buffer without the char at point"
   [buffer point]
-  (let [string (nth buffer (second point))
-        point-x (first point)
-        line-after-deletion (str
-                             (.substring string 0 point-x)
-                             (try (.substring string (inc point-x) (.length string))
-                                  (catch java.lang.StringIndexOutOfBoundsException
-                                      e
-                                    "")))]
-    (assoc buffer (second point) line-after-deletion)))
+  (if (not (> (second point) (count buffer)))
+    (let [line (nth buffer (second point))
+          point-x (first point)]
+      (assoc buffer (second point)
+             (delete-char-in-line line point-x)))
+    buffer))
 
 (defn delete-char!
   "Opposite of insert-char!"
@@ -29,6 +34,18 @@
             current-buffer
             (delete-char-at-point @current-buffer
                                   point))))
+
+(defn delete-char-backwards-from-point
+  ([buffer point]
+   (if (-> (first point) zero?)
+     buffer
+     (delete-char-at-point buffer [(dec (first point)) (second point)]))))
+
+(defn delete-char-backwards!
+  "What your backspace key does"
+  ([point] (swap! current-buffer
+                  #(delete-char-backwards-from-point %
+                                                     point))))
 
 (defn insert-char-in-line
   "Returns a string with `char' inserted at `point-y'"

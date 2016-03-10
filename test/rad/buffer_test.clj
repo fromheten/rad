@@ -3,9 +3,29 @@
             [rad.buffer :refer :all]))
 
 (deftest buffer-tests
-  (testing "Deleting a char at point"
+  (testing "Deleting a char in a line"
+    (is (= "ra"
+           (delete-char-in-line "rad" 999)))
+    (is (= "rd"
+           (delete-char-in-line "rad" 1)))
+    (is (= "0123"
+           (delete-char-in-line "01234" 4))))
+
+(testing "Deleting a char at point"
     (is (= ["Rad is meant" "o be hacked"]
-           (delete-char-at-point ["Rad is meant" "to be hacked"] [0 1]))))
+           (delete-char-at-point ["Rad is meant" "to be hacked"] [0 1])))
+    (is (= ["ra"]
+           (delete-char-at-point ["rad"] [1337 0])))
+    (is (= ["rad"]
+           (delete-char-at-point ["rad"] [0 1337]))))
+
+  (testing "deleting a char backwards"
+    (is (= ["Rd"]
+           (delete-char-backwards-from-point ["Rad"] [2 0])))
+    (is (= ["Rad"]
+           (delete-char-backwards-from-point ["Rad"] [0 0])))
+    (is (= ["Rad" "is" "meant" "to" "HACK"]
+           (delete-char-backwards-from-point ["Rad" "is" "meant" "to" "HACK"] [0 3]))))
 
   (testing "Inserting a character at point"
     (is (= ["Rad is meant" "hto be hacked"]

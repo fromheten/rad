@@ -13,8 +13,8 @@
  (reify Thread$UncaughtExceptionHandler
    (uncaughtException [_ thread throwable]
      (println "\n\nOh no!\n\n")
-     (let [stack-trace (.getStackTrace throwable)]
-       (clojure.stacktrace/print-stack-trace stack-trace))
+     (clojure.stacktrace/print-stack-trace throwable)
+     (-> throwable .getStackTrace clojure.stacktrace/print-stack-trace)
      (System/exit 1))))
 
 (defn -main [& args]
