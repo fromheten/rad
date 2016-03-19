@@ -47,6 +47,17 @@
                   #(delete-char-backwards-from-point %
                                                      point))))
 
+(defn delete-line
+  "Returns buffer without the line at position line-nr"
+  [buffer line-nr]
+  (try (into (subvec buffer 0 line-nr)
+             (subvec buffer (inc line-nr)))
+       (catch Exception e buffer)))
+
+(defn delete-line!
+  "Deletes a line in the current buffer."
+  ([point] (swap! current-buffer delete-line (second point))))
+
 (defn insert-char-in-line
   "Returns a string with `char' inserted at `point-y'"
   [^String line char point-x]
