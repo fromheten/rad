@@ -1,6 +1,7 @@
 (ns rad.buffer
   (:require [clojure.core.async :as a :refer [chan go >!]]
-            [rad.state]))
+            [rad.state]
+            [rad.point]))
 
 (defn delete-char-in-line
   "Returns line without the char at point"
@@ -35,9 +36,9 @@
 
 (defn delete-char-backwards!
   "What your backspace key does"
+  ([] (delete-char-backwards! @rad.state/point))
   ([point] (swap! rad.state/current-buffer
-                  #(delete-char-backwards-from-point %
-                                                     point))))
+                  #(delete-char-backwards-from-point % point))))
 
 (defn insert-char-in-line
   "Returns a string with `char' inserted at `point-y'"
@@ -65,12 +66,12 @@
 
 (defn insert-char!
   "Inserts one-char input at point"
-  [^String input point]
-  (do (reset!
-       rad.state/current-buffer
-       (insert-char-at-point @rad.state/current-buffer
-                             point
-                             input))))
+  ([input] (insert-char! input @rad.state/point))
+  ([^String input point] (do (reset! rad.state/current-buffer
+                                     (insert-char-at-point @rad.state/current-buffer
+                                                           point
+                                                           input))
+                             (rad.point/move-point-forward!))))
 
 (defn insert-new-line-at-line-number
   "Returns a buffer with a blank line at position `line-nr'"

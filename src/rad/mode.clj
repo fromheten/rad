@@ -29,8 +29,7 @@
       :right (rad.point/move-point-forward!)
 
       (println (str "Can not handle input: " input)))
-    (do (rad.buffer/insert-char! input @rad.state/point)
-        (rad.point/move-point-forward!))))
+    (rad.buffer/insert-char! input @rad.state/point)))
 
 ;;; Command mode
 

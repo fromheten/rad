@@ -1,7 +1,6 @@
 (ns rad.point
   (:require [clojure.core.async :as a :refer [chan]]
-            [rad.state]
-            [rad.buffer]))
+            [rad.state]))
 
 (defn move-point-forward
   "Returns a point where the x position is incremented `steps' steps"
