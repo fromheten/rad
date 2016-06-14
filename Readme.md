@@ -66,6 +66,8 @@ Rad (currently) has 2 modes. They are defined in `rad.mode`.
 Rad packages are crazy simple. They have exactly the same form as a Clojure `ns` macro.
 Only difference is: a rad package requires a `docstring` and an `attr-map`.
 
+Rad packages are a vector where the first element is a ns declaration. Think a normal clojure file, wrapped in `[]`.
+
 All packages in `~/.rad/packages` will be loaded upon startup.
 
 All standard packages that are distributed along with Rad are located in `../standard-packages/`.

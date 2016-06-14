@@ -11,7 +11,7 @@
     (is (= "0123"
            (delete-char-in-line "01234" 4))))
 
-(testing "Deleting a char at point"
+  (testing "Deleting a char at point"
     (is (= ["Rad is meant" "o be hacked"]
            (delete-char-at-point ["Rad is meant" "to be hacked"] [0 1])))
     (is (= ["ra"]
