@@ -12,9 +12,9 @@
 (Thread/setDefaultUncaughtExceptionHandler
  (reify Thread$UncaughtExceptionHandler
    (uncaughtException [_ thread throwable]
-     (println "\n\nOh no!\n\n")
-     (clojure.stacktrace/print-stack-trace throwable)
-     (-> throwable .getStackTrace clojure.stacktrace/print-stack-trace)
+     (println "\nOh no!\n")
+     (println (clojure.stacktrace/print-stack-trace throwable))
+     (println "\n さようなら \n")
      (System/exit 1))))
 
 (defn -main [& args]
@@ -27,7 +27,7 @@
 
   (go (package/load-all-packages-in-dir! "standard-packages")
       (package/load-all-packages-in-dir! (str (System/getProperty "user.home")
-                                           "/.rad/packages")))
+                                              "/.rad/packages")))
 
   (go-loop []
     (a/>! out-c (<! rad.buffer/buffer-updates-channel))
