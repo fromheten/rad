@@ -30,10 +30,10 @@
                                               "/.rad/packages")))
 
   (go-loop []
-    (a/>! out-c (<! rad.buffer/buffer-updates-channel))
+    (a/>! out-c (<! rad.state/buffer-updates-channel))
     (recur))
   (go-loop []
-    (a/>! point-c (<! rad.point/point-update-channel))
+    (a/>! point-c (<! rad.state/point-update-channel))
     (recur))
   (go-loop []
     (rad.mode/handle-keypress! (<! in-c))

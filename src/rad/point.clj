@@ -1,14 +1,7 @@
 (ns rad.point
   (:require [clojure.core.async :as a :refer [chan]]
+            [rad.state]
             [rad.buffer]))
-
-(def point (atom [0 0]))
-(def point-update-channel
-  (let [channel (chan)]
-    (add-watch point :_
-               (fn [_ _ _ new-state]
-                 (a/put! channel new-state)))
-    channel))
 
 (defn move-point-forward
   "Returns a point where the x position is incremented `steps' steps"
@@ -29,7 +22,7 @@
 (defn move-point-forward!
   "Moves point steps forward, defaults to 1"
   ([] (move-point-forward! 1))
-  ([steps] (swap! point move-point-forward steps @rad.buffer/current-buffer)))
+  ([steps] (swap! rad.state/point move-point-forward steps @rad.state/current-buffer)))
 
 (defn move-point-backwards
   "Returns a point where the x position is decremented `steps' steps"
@@ -43,7 +36,7 @@
 
 (defn move-point-backwards!
   ([] (move-point-backwards! 1))
-  ([steps] (swap! point move-point-backwards steps)))
+  ([steps] (swap! rad.state/point move-point-backwards steps)))
 
 (defn move-point-up
   "Returns a point where the y position is decremented `steps' steps"
@@ -56,7 +49,7 @@
 (defn move-point-up!
   "Moves point `steps' steps up. Defaults to 1 step."
   ([] (move-point-up! 1))
-  ([steps] (swap! point move-point-up steps @rad.buffer/current-buffer)))
+  ([steps] (swap! rad.state/point move-point-up steps @rad.state/current-buffer)))
 
 (defn move-point-down
   "Returns a point where the y position is decremented `steps' steps"
@@ -69,11 +62,11 @@
 
 (defn move-point-down!
   ([] (move-point-down! 1))
-  ([steps] (swap! point move-point-down steps @rad.buffer/current-buffer)))
+  ([steps] (swap! rad.state/point move-point-down steps @rad.state/current-buffer)))
 
 (defn move-point-to-beginning-of-line
   [point]
   [0 (second point)])
 
 (defn move-point-to-beginning-of-line! []
-  (swap! point move-point-to-beginning-of-line))
+  (swap! rad.state/point move-point-to-beginning-of-line))

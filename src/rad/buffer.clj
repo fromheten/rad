@@ -1,14 +1,6 @@
 (ns rad.buffer
-  (:require [clojure.core.async :as a :refer [chan go >!]]))
-
-(def current-buffer (atom ["Rad is meant"
-                           "to be hacked"]))
-(def buffer-updates-channel
-  (let [channel (chan)]
-    (add-watch current-buffer :_
-               (fn [_ _ _ new-state]
-                 (go (>! channel new-state))))
-    channel))
+  (:require [clojure.core.async :as a :refer [chan go >!]]
+            [rad.state]))
 
 (defn delete-char-in-line
   "Returns line without the char at point"
@@ -31,8 +23,8 @@
 (defn delete-char!
   "Opposite of insert-char!"
   ([point] (reset!
-            current-buffer
-            (delete-char-at-point @current-buffer
+            rad.state/current-buffer
+            (delete-char-at-point @rad.state/current-buffer
                                   point))))
 
 (defn delete-char-backwards-from-point
@@ -43,7 +35,7 @@
 
 (defn delete-char-backwards!
   "What your backspace key does"
-  ([point] (swap! current-buffer
+  ([point] (swap! rad.state/current-buffer
                   #(delete-char-backwards-from-point %
                                                      point))))
 
@@ -75,8 +67,8 @@
   "Inserts one-char input at point"
   [^String input point]
   (do (reset!
-       current-buffer
-       (insert-char-at-point @current-buffer
+       rad.state/current-buffer
+       (insert-char-at-point @rad.state/current-buffer
                              point
                              input))))
 
@@ -91,7 +83,7 @@
 
 (defn insert-new-line-at-line-number!
   "Inserts a new line into the current buffer"
-  ([line-nr] (swap! current-buffer insert-new-line-at-line-number line-nr)))
+  ([line-nr] (swap! rad.state/current-buffer insert-new-line-at-line-number line-nr)))
 
 (defn insert-new-line-below-point!
   [point] (insert-new-line-at-line-number! (inc (second point))))
