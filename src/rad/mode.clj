@@ -17,10 +17,10 @@
   [input]
   (if (keyword? input)
     (condp = input
-      :back_space (do (rad.buffer/delete-char-backwards! @rad.point/point)
+      :back_space (do (rad.buffer/delete-char-backwards! @rad.state/point)
                       (rad.point/move-point-backwards! 1))
       :tab (change-mode-to! :command)
-      :enter (do (rad.buffer/insert-new-line-below-point! @rad.point/point)
+      :enter (do (rad.buffer/insert-new-line-below-point! @rad.state/point)
                  (rad.point/move-point-to-beginning-of-line!)
                  (rad.point/move-point-down! 1))
       :up (rad.point/move-point-up!)
@@ -29,8 +29,7 @@
       :right (rad.point/move-point-forward!)
 
       (println (str "Can not handle input: " input)))
-    (do (rad.buffer/insert-char! input @rad.point/point)
-        (rad.point/move-point-forward!))))
+    (rad.buffer/insert-char! input @rad.state/point)))
 
 ;;; Command mode
 

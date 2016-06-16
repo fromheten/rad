@@ -1,14 +1,7 @@
 (ns rad.buffer
-  (:require [clojure.core.async :as a :refer [chan go >!]]))
-
-(def current-buffer (atom ["Rad is meant"
-                           "to be hacked"]))
-(def buffer-updates-channel
-  (let [channel (chan)]
-    (add-watch current-buffer :_
-               (fn [_ _ _ new-state]
-                 (go (>! channel new-state))))
-    channel))
+  (:require [clojure.core.async :as a :refer [chan go >!]]
+            [rad.state]
+            [rad.point]))
 
 (defn delete-char-in-line
   "Returns line without the char at point"
@@ -31,8 +24,8 @@
 (defn delete-char!
   "Opposite of insert-char!"
   ([point] (reset!
-            current-buffer
-            (delete-char-at-point @current-buffer
+            rad.state/current-buffer
+            (delete-char-at-point @rad.state/current-buffer
                                   point))))
 
 (defn delete-char-backwards-from-point
@@ -43,9 +36,9 @@
 
 (defn delete-char-backwards!
   "What your backspace key does"
-  ([point] (swap! current-buffer
-                  #(delete-char-backwards-from-point %
-                                                     point))))
+  ([] (delete-char-backwards! @rad.state/point))
+  ([point] (swap! rad.state/current-buffer
+                  #(delete-char-backwards-from-point % point))))
 
 (defn insert-char-in-line
   "Returns a string with `char' inserted at `point-y'"
@@ -73,12 +66,12 @@
 
 (defn insert-char!
   "Inserts one-char input at point"
-  [^String input point]
-  (do (reset!
-       current-buffer
-       (insert-char-at-point @current-buffer
-                             point
-                             input))))
+  ([input] (insert-char! input @rad.state/point))
+  ([^String input point] (do (reset! rad.state/current-buffer
+                                     (insert-char-at-point @rad.state/current-buffer
+                                                           point
+                                                           input))
+                             (rad.point/move-point-forward!))))
 
 (defn insert-new-line-at-line-number
   "Returns a buffer with a blank line at position `line-nr'"
@@ -91,7 +84,7 @@
 
 (defn insert-new-line-at-line-number!
   "Inserts a new line into the current buffer"
-  ([line-nr] (swap! current-buffer insert-new-line-at-line-number line-nr)))
+  ([line-nr] (swap! rad.state/current-buffer insert-new-line-at-line-number line-nr)))
 
 (defn insert-new-line-below-point!
   [point] (insert-new-line-at-line-number! (inc (second point))))

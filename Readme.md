@@ -92,7 +92,7 @@ This is the package I used for testing. It's very small but shows off what capab
                     {\p
                      {\p
                       {\y
-                       (fn [] (reset! rad.buffer/current-buffer
+                       (fn [] (reset! rad.state/current-buffer
                                       (replace-buffer-with-happy-message/message!)))}}}}}}})
 
 (println "Happy Hacking :)")

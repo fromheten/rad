@@ -24,7 +24,7 @@ We will begin my making a package, that adds a command. When the package is load
                     {\p
                      {\p
                       {\y
-                       (fn [] (reset! rad.buffer/current-buffer ;; you can use any rad namespace, except for `rad.core`
+                       (fn [] (reset! rad.state/current-buffer ;; you can use any rad namespace, except for `rad.core`
                                 (replace-buffer-with-happy-message/message)))}}}}}}})
 
 (println "Happy Hacking :)")
