@@ -17,7 +17,9 @@
     (is (= ["ra"]
            (delete-char-at-point ["rad"] [1337 0])))
     (is (= ["rad"]
-           (delete-char-at-point ["rad"] [0 1337]))))
+           (delete-char-at-point ["rad"] [0 1337])))
+    (is (= ["" "hack"]
+           (delete-char-at-point ["" "hack"] [8 0]))))
 
   (testing "deleting a char backwards"
     (is (= ["Rd"]
@@ -39,6 +41,12 @@
              ["" "" "just some random" "" "stuff" "" "" "" "" "" ""]
              [588 8]
              "o"))))
+
+  (testing "Deleting a line"
+    (is (= ["Rad" "hack"]
+           (delete-line ["Rad" "loves" "hack"] 1)))
+    (is (= ["Rad" "loves" "hack"]
+           (delete-line ["Rad" "loves" "hack"] 999))))
 
   (testing "inserting a char in a line"
     (is (= "rad"

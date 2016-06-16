@@ -9,7 +9,9 @@
   (try
     (str (subs line 0 point-x) (subs line (inc point-x)))
     (catch Exception e
-      (delete-char-in-line line (dec (count line))))))
+      (if (zero? (count line))
+        line
+        (delete-char-in-line line (dec (count line)))))))
 
 (defn delete-char-at-point
   "Returns buffer without the char at point"
@@ -37,8 +39,18 @@
 (defn delete-char-backwards!
   "What your backspace key does"
   ([] (delete-char-backwards! @rad.state/point))
-  ([point] (swap! rad.state/current-buffer
-                  #(delete-char-backwards-from-point % point))))
+  ([point] (do (swap! rad.state/current-buffer
+                      #(delete-char-backwards-from-point % point))
+               (rad.point/move-point-backwards!))))
+
+(defn delete-line [buffer line-nr]
+  (try (into (subvec buffer 0 line-nr)
+             (subvec buffer (inc line-nr)))
+       (catch Exception e buffer)))
+
+(defn delete-line!
+  ([] (delete-line! @rad.state/point))
+  ([point] (swap! rad.state/current-buffer delete-line (second point))))
 
 (defn insert-char-in-line
   "Returns a string with `char' inserted at `point-y'"
