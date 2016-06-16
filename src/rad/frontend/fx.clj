@@ -69,7 +69,10 @@
   [buffer point]
   (fx/compile-fx (fx-hiccup buffer point)))
 
-(defn app-window! []
+(defn app-window!
+  "Initiates all the Java shit for creating a JavaFX window.
+  Major problem: can not run twice, becuase two windows will share state"
+  []
   (fx/run<!!
    (let [scene (fx/scene (buffer->widgets [""] [0 0]))
          stage (fx/stage)]

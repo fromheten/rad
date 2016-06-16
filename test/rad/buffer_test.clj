@@ -27,6 +27,12 @@
     (is (= ["Rad" "is" "meant" "to" "HACK"]
            (delete-char-backwards-from-point ["Rad" "is" "meant" "to" "HACK"] [0 3]))))
 
+  (testing "Deleting a line"
+    (is (= ["Rad" "hack"]
+           (delete-line ["Rad" "loves" "hack"] 1)))
+    (is (= ["Rad" "loves" "hack"]
+           (delete-line ["Rad" "loves" "hack"] 999))))
+
   (testing "Inserting a character at point"
     (is (= ["Rad is meant" "hto be hacked"]
            (insert-char-at-point ["Rad is meant" "to be hacked"] [0 1] "h")))
