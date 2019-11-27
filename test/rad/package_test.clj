@@ -8,9 +8,6 @@
                            {:author {:name "Martin Josefsson"
                                      :url "http://www.martinjosefsson.com"
                                      :email "hello@martinjosefsson.com"}
-                            :people [{:name "Jesper Oskarsson"
-                                      :url "http://github.com/redien/reuse-lang"
-                                      :email "jesosk@gmail.com"}]
                             :version "1.0.0"
                             :repository "https://github.com/fromheten/rad/"
                             :keywords #{:test :package}
