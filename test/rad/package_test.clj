@@ -7,7 +7,7 @@
                            "A prototype for how a package can look"
                            {:author {:name "Martin Josefsson"
                                      :url "http://www.martinjosefsson.com"
-                                     :email "hello@martinjosefsson.com"}
+                                     :email "example@example.org"}
                             :version "1.0.0"
                             :repository "https://github.com/fromheten/rad/"
                             :keywords #{:test :package}

@@ -17,7 +17,7 @@ We will begin my making a package, that adds a command. When the package is load
   Just for fun."
   {:author {:name "Martin Josefsson"
             :url "http://www.martinjosefsson.com"
-            :email "hello@martinjosefsson.com"}
+            :email "example@example.org"}
    :command-map '{\!
                   {\h
                    {\a

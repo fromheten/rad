@@ -85,7 +85,7 @@ This is the package I used for testing. It's very small but shows off what capab
   Just for fun."
   {:author {:name "Martin Josefsson"
             :url "http://www.martinjosefsson.com"
-            :email "hello@martinjosefsson.com"}
+            :email "example@example.org"}
    :command-map '{\!
                   {\h
                    {\a
